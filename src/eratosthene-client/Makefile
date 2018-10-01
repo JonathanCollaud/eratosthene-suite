@@ -36,7 +36,7 @@ ifeq ($(MAKE_OSYS),Linux)
 else
 ifeq ($(MAKE_OSYS),Darwin)
     MAKE_FCMP:=-std=c99 -O3 -Wall -Wno-deprecated -funsigned-char -pedantic -D _DEFAULT_SOURCE -flto -Xpreprocessor -fopenmp -I/usr/local/opt/libomp/include
-    MAKE_FLNK:=-lm -lgomp -framework OpenGL -framework SDL2 -flto
+    MAKE_FLNK:=-lm -lgomp -framework OpenGL -framework SDL2 -F /Library/Frameworks -flto
 endif
 endif
 
