@@ -18,334 +18,358 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-    # include "eratosthene-client-view.h"
+# include "eratosthene-client-view.h"
 
 /*
     source - constructor/destructor methods
  */
 
-    er_view_t er_view_create( le_void_t ) {
+er_view_t er_view_create( le_void_t )
+{
 
-        /* created structure variables */
-        er_view_t er_view = ER_VIEW_C;
+    /* created structure variables */
+    er_view_t er_view = ER_VIEW_C;
 
-        /* return created structure */
-        return( er_view );
+    /* return created structure */
+    return( er_view );
 
-    }
+}
 
-    le_void_t er_view_delete( er_view_t * const er_view ) {
+le_void_t er_view_delete( er_view_t * const er_view )
+{
 
-        /* deleted structure variables */
-        er_view_t er_delete = ER_VIEW_C;
+    /* deleted structure variables */
+    er_view_t er_delete = ER_VIEW_C;
 
-        /* delete structure */
-        ( * er_view ) = er_delete;
+    /* delete structure */
+    ( * er_view ) = er_delete;
 
-    }
+}
 
 /*
     source - accessor methods
  */
 
-    le_enum_t er_view_get_equal( er_view_t const * const er_viewa, er_view_t const * const er_viewb ) {
+le_enum_t er_view_get_equal( er_view_t const * const er_viewa, er_view_t const * const er_viewb )
+{
 
-        /* check spatial components - return answer */
-        if ( er_viewa->vw_lon != er_viewb->vw_lon ) return( _LE_FALSE );
-        if ( er_viewa->vw_lat != er_viewb->vw_lat ) return( _LE_FALSE );
-        if ( er_viewa->vw_alt != er_viewb->vw_alt ) return( _LE_FALSE );
+    /* check spatial components - return answer */
+    if ( er_viewa->vw_lon != er_viewb->vw_lon ) return( _LE_FALSE );
+    if ( er_viewa->vw_lat != er_viewb->vw_lat ) return( _LE_FALSE );
+    if ( er_viewa->vw_alt != er_viewb->vw_alt ) return( _LE_FALSE );
 
-        /* check temporal components - return answer */
-        if ( er_viewa->vw_tia != er_viewb->vw_tia ) return( _LE_FALSE );
-        if ( er_viewa->vw_tib != er_viewb->vw_tib ) return( _LE_FALSE );
+    /* check temporal components - return answer */
+    if ( er_viewa->vw_tia != er_viewb->vw_tia ) return( _LE_FALSE );
+    if ( er_viewa->vw_tib != er_viewb->vw_tib ) return( _LE_FALSE );
 
-        /* check mode component - return answer */
-        if ( er_viewa->vw_mod != er_viewb->vw_mod ) return( _LE_FALSE );
+    /* check mode component - return answer */
+    if ( er_viewa->vw_mod != er_viewb->vw_mod ) return( _LE_FALSE );
 
-        /* check span component  - return answer */
-        if ( er_viewa->vw_spn != er_viewb->vw_spn ) return( _LE_FALSE );
+    /* check span component  - return answer */
+    if ( er_viewa->vw_spn != er_viewb->vw_spn ) return( _LE_FALSE );
 
-        /* return answer */
-        return( _LE_TRUE );
+    /* return answer */
+    return( _LE_TRUE );
 
-    }
+}
 
-    le_real_t er_view_get_lon( er_view_t const * const er_view ) {
+le_real_t er_view_get_lon( er_view_t const * const er_view )
+{
 
-        /* return view value */
-        return( er_view->vw_lon );
+    /* return view value */
+    return( er_view->vw_lon );
 
-    }
+}
 
-    le_real_t er_view_get_lat( er_view_t const * const er_view ) {
+le_real_t er_view_get_lat( er_view_t const * const er_view )
+{
 
-        /* return view value */
-        return( er_view->vw_lat );
+    /* return view value */
+    return( er_view->vw_lat );
 
-    }
+}
 
-    le_real_t er_view_get_alt( er_view_t const * const er_view ) {
+le_real_t er_view_get_alt( er_view_t const * const er_view )
+{
 
-        /* return view value */
-        return( er_view->vw_alt );
+    /* return view value */
+    return( er_view->vw_alt );
 
-    }
+}
 
-    le_real_t er_view_get_azm( er_view_t const * const er_view ) {
+le_real_t er_view_get_azm( er_view_t const * const er_view )
+{
 
-        /* return view value */
-        return( er_view->vw_azm );
+    /* return view value */
+    return( er_view->vw_azm );
 
-    }
+}
 
-    le_real_t er_view_get_gam( er_view_t const * const er_view ) {
+le_real_t er_view_get_gam( er_view_t const * const er_view )
+{
 
-        /* return view value */
-        return( er_view->vw_gam );
+    /* return view value */
+    return( er_view->vw_gam );
 
-    }
+}
 
-    le_void_t er_view_get_pose( er_view_t const * const er_view, le_real_t * const er_pose ) {
+le_void_t er_view_get_pose( er_view_t const * const er_view, le_real_t * const er_pose )
+{
 
-        /* assign position */
-        er_pose[0] = er_view->vw_lon * ER_COMMON_D2R;
-        er_pose[1] = er_view->vw_lat * ER_COMMON_D2R;
-        er_pose[2] = er_view->vw_alt;
+    /* assign position */
+    er_pose[0] = er_view->vw_lon * ER_COMMON_D2R;
+    er_pose[1] = er_view->vw_lat * ER_COMMON_D2R;
+    er_pose[2] = er_view->vw_alt;
 
-    }
+}
 
-    le_real_t er_view_get_inertia( er_view_t const * const er_view, le_enum_t const er_modifier ) {
+le_real_t er_view_get_inertia( er_view_t const * const er_view, le_enum_t const er_modifier )
+{
 
-        /* inertia variable */
-        le_real_t er_inertia = fabs( er_view->vw_alt - LE_ADDRESS_WGS_A ) * ER_COMMON_INE;
+    /* inertia variable */
+    le_real_t er_inertia = fabs( er_view->vw_alt - LE_ADDRESS_WGS_A ) * ER_COMMON_INE;
 
-        /* range clamping */
-        er_inertia = er_inertia < 5.0 ? 5.0 : er_inertia;
+    /* range clamping */
+    er_inertia = er_inertia < 5.0 ? 5.0 : er_inertia;
 
-        /* check modifier */
-        if ( er_modifier & ER_COMMON_KMCTL ) {
+    /* check modifier */
+    if ( er_modifier & ER_COMMON_KMCTL ) {
 
-            /* modify inertia */
-            er_inertia *=  ER_COMMON_IMU;
+        /* modify inertia */
+        er_inertia *=  ER_COMMON_IMU;
 
-        } else if ( er_modifier & ER_COMMON_KMSHF ) {
+    } else if ( er_modifier & ER_COMMON_KMSHF ) {
 
-            /* modify inertia */
-            er_inertia *= ER_COMMON_IML;
-
-        }
-
-        /* return inertia */
-        return( er_inertia );
-
-    }
-
-    le_enum_t er_view_get_mode( er_view_t const * const er_view ) {
-
-        /* return time mode */
-        return( er_view->vw_mod );
+        /* modify inertia */
+        er_inertia *= ER_COMMON_IML;
 
     }
 
-    le_address_t er_view_get_times( er_view_t const * const er_view ) {
+    /* return inertia */
+    return( er_inertia );
 
-        /* returned structure variables */
-        le_address_t er_addr = LE_ADDRESS_C;
+}
 
-        /* assign address mode */
-        le_address_set_mode( & er_addr, er_view->vw_mod );
+le_enum_t er_view_get_mode( er_view_t const * const er_view )
+{
 
-        /* set address span */
-        le_address_set_span( & er_addr, er_view->vw_spn );
+    /* return time mode */
+    return( er_view->vw_mod );
 
-        /* check mode */
-        if ( er_view->vw_mod != 2 ) {
+}
 
-            /* assign address times */
-            le_address_set_time( & er_addr, 0, er_view->vw_tia );
+le_address_t er_view_get_times( er_view_t const * const er_view )
+{
 
-        }
+    /* returned structure variables */
+    le_address_t er_addr = LE_ADDRESS_C;
 
-        /* check mode */
-        if ( er_view->vw_mod != 1 ) {
+    /* assign address mode */
+    le_address_set_mode( & er_addr, er_view->vw_mod );
 
-            /* assign address time */
-            le_address_set_time( & er_addr, 1, er_view->vw_tib );
+    /* set address span */
+    le_address_set_span( & er_addr, er_view->vw_spn );
 
-        }
+    /* check mode */
+    if ( er_view->vw_mod != 2 ) {
 
-        /* return address structure */
-        return( er_addr );
-
-    }
-
-    le_time_t er_view_get_time( er_view_t const * const er_view, le_enum_t const er_time ) {
-
-        /* check asked time */
-        if ( er_time == 0 ) {
-
-            /* return asked time */
-            return( er_view->vw_tia );
-
-        } else {
-
-            /* return asked time */
-            return( er_view->vw_tib );
-
-        }
+        /* assign address times */
+        le_address_set_time( & er_addr, 0, er_view->vw_tia );
 
     }
 
-    le_time_t er_view_get_area( er_view_t const * const er_view, le_enum_t const er_time ) {
+    /* check mode */
+    if ( er_view->vw_mod != 1 ) {
 
-        /* check asked zoom */
-        if ( er_time == 0 ) {
-
-            /* return asked zoom */
-            return( er_view->vw_zta );
-
-        } else {
-
-            /* return asked zoom */
-            return( er_view->vw_ztb );
-
-        }
+        /* assign address time */
+        le_address_set_time( & er_addr, 1, er_view->vw_tib );
 
     }
 
-    le_size_t er_view_get_span( er_view_t const * const er_view ) {
+    /* return address structure */
+    return( er_addr );
 
-        /* return view span */
-        return( er_view->vw_spn );
+}
+
+le_time_t er_view_get_time( er_view_t const * const er_view, le_enum_t const er_time )
+{
+
+    /* check asked time */
+    if ( er_time == 0 ) {
+
+        /* return asked time */
+        return( er_view->vw_tia );
+
+    } else {
+
+        /* return asked time */
+        return( er_view->vw_tib );
 
     }
+
+}
+
+le_time_t er_view_get_area( er_view_t const * const er_view, le_enum_t const er_time )
+{
+
+    /* check asked zoom */
+    if ( er_time == 0 ) {
+
+        /* return asked zoom */
+        return( er_view->vw_zta );
+
+    } else {
+
+        /* return asked zoom */
+        return( er_view->vw_ztb );
+
+    }
+
+}
+
+le_size_t er_view_get_span( er_view_t const * const er_view )
+{
+
+    /* return view span */
+    return( er_view->vw_spn );
+
+}
 
 /*
     source - mutator methods
  */
 
-    le_void_t er_view_set_plan( er_view_t * const er_view, le_real_t const er_xvalue, le_real_t const er_yvalue ) {
+le_void_t er_view_set_plan( er_view_t * const er_view, le_real_t const er_xvalue, le_real_t const er_yvalue )
+{
 
-        /* azimuthal angles variables */
-        le_real_t er_cos = cos( er_view->vw_azm * ER_COMMON_D2R );
-        le_real_t er_sin = sin( er_view->vw_azm * ER_COMMON_D2R );
+    /* azimuthal angles variables */
+    le_real_t er_cos = cos( er_view->vw_azm * ER_COMMON_D2R );
+    le_real_t er_sin = sin( er_view->vw_azm * ER_COMMON_D2R );
 
-        /* update planimetric coordinates */
-        er_view->vw_lon += er_yvalue * er_sin - er_xvalue * er_cos;
-        er_view->vw_lat += er_yvalue * er_cos + er_xvalue * er_sin;
+    /* update planimetric coordinates */
+    er_view->vw_lon += er_yvalue * er_sin - er_xvalue * er_cos;
+    er_view->vw_lat += er_yvalue * er_cos + er_xvalue * er_sin;
 
-    }
+}
 
-    le_void_t er_view_set_alt( er_view_t * const er_view, le_real_t const er_value ) {
+le_void_t er_view_set_alt( er_view_t * const er_view, le_real_t const er_value )
+{
 
-        /* update altitude */
-        er_view->vw_alt += er_value;
+    /* update altitude */
+    er_view->vw_alt += er_value;
 
-        /* clamp altitude value */
-        er_view->vw_alt = lc_clamp( er_view->vw_alt, ER_COMMON_ALL, ER_COMMON_ALU );
+    /* clamp altitude value */
+    er_view->vw_alt = lc_clamp( er_view->vw_alt, ER_COMMON_ALL, ER_COMMON_ALU );
 
-    }
+}
 
-    le_void_t er_view_set_azm( er_view_t * const er_view, le_real_t const er_value ) {
+le_void_t er_view_set_azm( er_view_t * const er_view, le_real_t const er_value )
+{
 
-        /* update azimuth */
-        er_view->vw_azm += er_value;
+    /* update azimuth */
+    er_view->vw_azm += er_value;
 
-        /* clamp azimuth value */
-        er_view->vw_azm = lc_angle( er_view->vw_azm );
+    /* clamp azimuth value */
+    er_view->vw_azm = lc_angle( er_view->vw_azm );
 
-    }
+}
 
-    le_void_t er_view_set_gam( er_view_t * const er_view, le_real_t const er_value ) {
+le_void_t er_view_set_gam( er_view_t * const er_view, le_real_t const er_value )
+{
 
-        /* update gamma */
-        er_view->vw_gam += er_value;
+    /* update gamma */
+    er_view->vw_gam += er_value;
 
-        /* clamp gamma value */
-        er_view->vw_gam = lc_clamp( er_view->vw_gam, 0.0, 140.0 );
+    /* clamp gamma value */
+    er_view->vw_gam = lc_clamp( er_view->vw_gam, 0.0, 140.0 );
 
-    }
+}
 
-    le_void_t er_view_set_mode( er_view_t * const er_view, le_enum_t const er_mode ) {
+le_void_t er_view_set_mode( er_view_t * const er_view, le_enum_t const er_mode )
+{
 
-        /* update mode */
-        er_view->vw_mod = er_mode;
+    /* update mode */
+    er_view->vw_mod = er_mode;
 
-    }
+}
 
-    le_void_t er_view_set_times( er_view_t * const er_view ) {
+le_void_t er_view_set_times( er_view_t * const er_view )
+{
 
-        /* check mode */
-        if ( er_view->vw_mod == 1 ) {
+    /* check mode */
+    if ( er_view->vw_mod == 1 ) {
 
-            /* align secondary time */
-            er_view->vw_tib = er_view->vw_tia;
+        /* align secondary time */
+        er_view->vw_tib = er_view->vw_tia;
 
-            /* align secondary area */
-            er_view->vw_ztb = er_view->vw_zta;
+        /* align secondary area */
+        er_view->vw_ztb = er_view->vw_zta;
 
-        } else if ( er_view->vw_mod == 2 ) {
+    } else if ( er_view->vw_mod == 2 ) {
 
-            /* align secondary time */
-            er_view->vw_tia = er_view->vw_tib;
+        /* align secondary time */
+        er_view->vw_tia = er_view->vw_tib;
 
-            /* align secondary area */
-            er_view->vw_zta = er_view->vw_ztb;
-
-        }
-
-    }
-
-    le_void_t er_view_set_time( er_view_t * const er_view, le_real_t const er_value ) {
-
-        /* check mode */
-        if ( er_view->vw_mod == 1 ) {
-
-            /* update time value */
-            er_view->vw_tia += ( le_real_t ) er_view->vw_zta * er_value;
-
-            /* clamp time range */
-            er_view->vw_tia = lc_clamp( er_view->vw_tia, -ER_COMMON_LIMIT, +ER_COMMON_LIMIT );
-
-        } else if ( er_view->vw_mod == 2 ) {
-
-            /* update time value */
-            er_view->vw_tib += ( le_real_t ) er_view->vw_ztb * er_value;
-
-            /* clamp time range */
-            er_view->vw_tib = lc_clamp( er_view->vw_tib, -ER_COMMON_LIMIT, +ER_COMMON_LIMIT );
-
-        }
+        /* align secondary area */
+        er_view->vw_zta = er_view->vw_ztb;
 
     }
 
-    le_void_t er_view_set_area( er_view_t * const er_view, le_real_t const er_value ) {
+}
 
-        /* check mode */
-        if ( er_view->vw_mod == 1 ) {
+le_void_t er_view_set_time( er_view_t * const er_view, le_real_t const er_value )
+{
 
-            /* update area value */
-            er_view->vw_zta *= er_value;
+    /* check mode */
+    if ( er_view->vw_mod == 1 ) {
 
-            /* clamp area value */
-            er_view->vw_zta = lc_clamp( er_view->vw_zta, 60, 32314982400 );
+        /* update time value */
+        er_view->vw_tia += ( le_real_t ) er_view->vw_zta * er_value;
 
-        } else if ( er_view->vw_mod == 2 ) {
+        /* clamp time range */
+        er_view->vw_tia = lc_clamp( er_view->vw_tia, -ER_COMMON_LIMIT, +ER_COMMON_LIMIT );
 
-            /* update area value */
-            er_view->vw_ztb *= er_value;
+    } else if ( er_view->vw_mod == 2 ) {
 
-            /* clamp area value */
-            er_view->vw_ztb = lc_clamp( er_view->vw_ztb, 60, 32314982400 );
+        /* update time value */
+        er_view->vw_tib += ( le_real_t ) er_view->vw_ztb * er_value;
 
-        }
+        /* clamp time range */
+        er_view->vw_tib = lc_clamp( er_view->vw_tib, -ER_COMMON_LIMIT, +ER_COMMON_LIMIT );
+
+    }
+
+}
+
+le_void_t er_view_set_area( er_view_t * const er_view, le_real_t const er_value )
+{
+
+    /* check mode */
+    if ( er_view->vw_mod == 1 ) {
+
+        /* update area value */
+        er_view->vw_zta *= er_value;
+
+        /* clamp area value */
+        er_view->vw_zta = lc_clamp( er_view->vw_zta, 60, 32314982400 );
+
+    } else if ( er_view->vw_mod == 2 ) {
+
+        /* update area value */
+        er_view->vw_ztb *= er_value;
+
+        /* clamp area value */
+        er_view->vw_ztb = lc_clamp( er_view->vw_ztb, 60, 32314982400 );
 
     }
 
-    le_void_t er_view_set_span( er_view_t * const er_view, le_size_t const er_value ) {
+}
 
-        /* update and clamp span value */
-        er_view->vw_spn = lc_clamp( er_view->vw_spn + er_value, ER_COMMON_SPL, ER_COMMON_SPH );
+le_void_t er_view_set_span( er_view_t * const er_view, le_size_t const er_value )
+{
 
-    }
+    /* update and clamp span value */
+    er_view->vw_spn = lc_clamp( er_view->vw_spn + er_value, ER_COMMON_SPL, ER_COMMON_SPH );
+
+}
 

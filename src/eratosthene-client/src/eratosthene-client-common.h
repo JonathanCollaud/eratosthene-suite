@@ -18,26 +18,26 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-    /*! \file   eratosthene-client-common.h
-     *  \author Nils Hamel <nils.hamel@bluewin.ch>
-     *
-     *  eratosthene-suite - client - common
-     */
+/*! \file   eratosthene-client-common.h
+ *  \author Nils Hamel <nils.hamel@bluewin.ch>
+ *
+ *  eratosthene-suite - client - common
+ */
 
 /*
     header - inclusion guard
  */
 
-    # ifndef __ER_CLIENT_COMMON__
-    # define __ER_CLIENT_COMMON__
+# ifndef __ER_CLIENT_COMMON__
+# define __ER_CLIENT_COMMON__
 
 /*
     header - C/C++ compatibility
  */
 
-    # ifdef __cplusplus
-    extern "C" {
-    # endif
+# ifdef __cplusplus
+extern "C" {
+# endif
 
 /*
     header - internal includes
@@ -47,63 +47,63 @@
     header - external includes
  */
 
-    # include <eratosthene-include.h>
-    # include <common-include.h>
-    # include <stdio.h>
-    # include <stdlib.h>
-    # include <math.h>
-    # include <omp.h>
-    # if defined ( __OS_APPLE )
-    # include <OpenGL/gl.h>
-    # include <OpenGL/glu.h>
-    # endif
-    # if defined ( __OS_LINUX )
-    # include <GL/gl.h>
-    # include <GL/glu.h>
-    # endif
-    # include <SDL2/SDL.h>
+# include <eratosthene-include.h>
+# include <common-include.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <math.h>
+# include <omp.h>
+# if defined ( __OS_APPLE )
+# include <OpenGL/gl.h>
+# include <OpenGL/glu.h>
+# endif
+# if defined ( __OS_LINUX )
+# include <GL/gl.h>
+# include <GL/glu.h>
+# endif
+# include <SDL2/SDL.h>
 
 /*
     header - preprocessor definitions
  */
 
-    /* define execution modes */
-    # define ER_COMMON_EXIT  ( 0x00 )
-    # define ER_COMMON_VIEW  ( 0x01 )
+/* define execution modes */
+# define ER_COMMON_EXIT  ( 0x00 )
+# define ER_COMMON_VIEW  ( 0x01 )
 
-    /* define trigonometric factors */
-    # define ER_COMMON_D2R   ( 3.1415926535 / 180.0 )
-    # define ER_COMMON_R2D   ( 180.0 / 3.1415926535 )
+/* define trigonometric factors */
+# define ER_COMMON_D2R   ( 3.1415926535 / 180.0 )
+# define ER_COMMON_R2D   ( 180.0 / 3.1415926535 )
 
-    /* define model parameters */
-    # define ER_COMMON_ENUM  ( 4 )
-    # define ER_COMMON_PACK  ( 8 )
+/* define model parameters */
+# define ER_COMMON_ENUM  ( 4 )
+# define ER_COMMON_PACK  ( 8 )
 
-    /* define inertial coefficients */
-    # define ER_COMMON_INE   ( 1.0 / 100.0 )
-    # define ER_COMMON_IML   ( 1.0 / 8.0 )
-    # define ER_COMMON_IMU   ( 8.0 )
-    # define ER_COMMON_INP   ( 2.0 * LE_PI / ( LE_ADDRESS_WGS_A * 180.0 ) )
-    # define ER_COMMON_INR   ( 1.0 / 800.0 )
+/* define inertial coefficients */
+# define ER_COMMON_INE   ( 1.0 / 100.0 )
+# define ER_COMMON_IML   ( 1.0 / 8.0 )
+# define ER_COMMON_IMU   ( 8.0 )
+# define ER_COMMON_INP   ( 2.0 * LE_PI / ( LE_ADDRESS_WGS_A * 180.0 ) )
+# define ER_COMMON_INR   ( 1.0 / 800.0 )
 
-    /* define limit : time area */
-    # define ER_COMMON_LIMIT ( _LE_TIME_L( 28382400000000 ) )
+/* define limit : time area */
+# define ER_COMMON_LIMIT ( _LE_TIME_L( 28382400000000 ) )
 
-    /* define limit : address span */
-    # define ER_COMMON_SPD ( 7 )
-    # define ER_COMMON_SPL ( 4 )
-    # define ER_COMMON_SPH ( 8 )
+/* define limit : address span */
+# define ER_COMMON_SPD ( 7 )
+# define ER_COMMON_SPL ( 4 )
+# define ER_COMMON_SPH ( 8 )
 
-    /* define limit : altitude */
-    # define ER_COMMON_ALL   ( LE_ADDRESS_WGS_A * 0.75 )
-    # define ER_COMMON_ALU   ( LE_ADDRESS_WGS_A * 3.00 )
+/* define limit : altitude */
+# define ER_COMMON_ALL   ( LE_ADDRESS_WGS_A * 0.75 )
+# define ER_COMMON_ALU   ( LE_ADDRESS_WGS_A * 3.00 )
 
-    /* define keyboard modifiers */
-    # define ER_COMMON_KMALL ( KMOD_LCTRL | KMOD_LALT | KMOD_LSHIFT )
-    # define ER_COMMON_KMAAC ( KMOD_LCTRL | KMOD_LALT )
-    # define ER_COMMON_KMCTL ( KMOD_LCTRL )
-    # define ER_COMMON_KMALT ( KMOD_LALT )
-    # define ER_COMMON_KMSHF ( KMOD_LSHIFT )
+/* define keyboard modifiers */
+# define ER_COMMON_KMALL ( KMOD_LCTRL | KMOD_LALT | KMOD_LSHIFT )
+# define ER_COMMON_KMAAC ( KMOD_LCTRL | KMOD_LALT )
+# define ER_COMMON_KMCTL ( KMOD_LCTRL )
+# define ER_COMMON_KMALT ( KMOD_LALT )
+# define ER_COMMON_KMSHF ( KMOD_LSHIFT )
 
 /*
     header - preprocessor macros
@@ -125,13 +125,13 @@
     header - C/C++ compatibility
  */
 
-    # ifdef __cplusplus
-    }
-    # endif
+# ifdef __cplusplus
+}
+# endif
 
 /*
     header - inclusion guard
  */
 
-    # endif
+# endif
 

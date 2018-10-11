@@ -9,3 +9,4 @@ lib/*/bin
 lib/*/dev
 lib/*/doc/html
 lib/*/obj
+*.orig

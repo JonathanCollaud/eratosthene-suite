@@ -18,32 +18,32 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-    /*! \file   eratosthene-client-font.h
-     *  \author Nils Hamel <nils.hamel@bluewin.ch>
-     *
-     *  eratosthene-suite - client - font
-     */
+/*! \file   eratosthene-client-font.h
+ *  \author Nils Hamel <nils.hamel@bluewin.ch>
+ *
+ *  eratosthene-suite - client - font
+ */
 
 /*
     header - inclusion guard
  */
 
-    # ifndef __ER_CLIENT_FONT__
-    # define __ER_CLIENT_FONT__
+# ifndef __ER_CLIENT_FONT__
+# define __ER_CLIENT_FONT__
 
 /*
     header - C/C++ compatibility
  */
 
-    # ifdef __cplusplus
-    extern "C" {
-    # endif
+# ifdef __cplusplus
+extern "C" {
+# endif
 
 /*
     header - internal includes
  */
 
-    # include "eratosthene-client-common.h"
+# include "eratosthene-client-common.h"
 
 /*
     header - external includes
@@ -53,8 +53,8 @@
     header - preprocessor definitions
  */
 
-    /* define font */
-    # define ER_FONT_ERATOSTHENE { 7, 17, 128, { \
+/* define font */
+# define ER_FONT_ERATOSTHENE { 7, 17, 128, { \
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,\
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,\
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,\
@@ -227,115 +227,115 @@
     header - structures
  */
 
-    /*! \struct er_font_struct
-     *  \brief font structure
-     *
-     *  This structure simply holds the bitmap definition of a font. The font
-     *  is a simple bitmap in which bits define char graphical structure. In
-     *  addition to the bitmap, the structure holds fields providing the font
-     *  char width, height and count.
-     *
-     *  The font follows the ANSI standard char encoding. Nevertheless, it can
-     *  come with fewer characters, like ASCII, as indicated by the count field.
-     *
-     *  \var er_font_struct::ft_w
-     *  Font character fixed width, in bits/pixels
-     *  \var er_font_struct::ft_h
-     *  Font character fixed height, in bits/pixels
-     *  \var er_font_struct::ft_c
-     *  Font character count, according to ANSI standard
-     *  \var er_font_struct::ft_bits
-     *  Array of the font bitmap
-     */
+/*! \struct er_font_struct
+ *  \brief font structure
+ *
+ *  This structure simply holds the bitmap definition of a font. The font
+ *  is a simple bitmap in which bits define char graphical structure. In
+ *  addition to the bitmap, the structure holds fields providing the font
+ *  char width, height and count.
+ *
+ *  The font follows the ANSI standard char encoding. Nevertheless, it can
+ *  come with fewer characters, like ASCII, as indicated by the count field.
+ *
+ *  \var er_font_struct::ft_w
+ *  Font character fixed width, in bits/pixels
+ *  \var er_font_struct::ft_h
+ *  Font character fixed height, in bits/pixels
+ *  \var er_font_struct::ft_c
+ *  Font character count, according to ANSI standard
+ *  \var er_font_struct::ft_bits
+ *  Array of the font bitmap
+ */
 
-    typedef struct er_font_struct {
+typedef struct er_font_struct {
 
-        le_size_t ft_w;
-        le_size_t ft_h;
-        le_size_t ft_c;
-        le_byte_t ft_bits[1904];
+    le_size_t ft_w;
+    le_size_t ft_h;
+    le_size_t ft_c;
+    le_byte_t ft_bits[1904];
 
-    } er_font_t;
+} er_font_t;
 
 /*
     header - function prototypes
  */
 
-    /*! \brief accessor methods
-     *
-     *  This function returns the font character width, in bits/pixels, of the
-     *  provided font.
-     *
-     *  \param er_font Font structure
-     *
-     *  \return Returns the font char width, in bits/pixels
-     */
+/*! \brief accessor methods
+ *
+ *  This function returns the font character width, in bits/pixels, of the
+ *  provided font.
+ *
+ *  \param er_font Font structure
+ *
+ *  \return Returns the font char width, in bits/pixels
+ */
 
-    le_size_t er_font_get_width( er_font_t const * const er_font );
+le_size_t er_font_get_width( er_font_t const * const er_font );
 
-    /*! \brief accessor methods
-     *
-     *  This function returns the font character height, bits/in pixels, of the
-     *  provided font.
-     *
-     *  \param er_font Font structure
-     *
-     *  \return Returns the font char height, in bits/pixels
-     */
+/*! \brief accessor methods
+ *
+ *  This function returns the font character height, bits/in pixels, of the
+ *  provided font.
+ *
+ *  \param er_font Font structure
+ *
+ *  \return Returns the font char height, in bits/pixels
+ */
 
-    le_size_t er_font_get_height( er_font_t const * const er_font );
+le_size_t er_font_get_height( er_font_t const * const er_font );
 
-    /*! \brief accessor methods
-     *
-     *  This function returns the amount of character contained in the provided
-     *  font.
-     *
-     *  \param er_font Font structure
-     *
-     *  \return Returns the font char count
-     */
+/*! \brief accessor methods
+ *
+ *  This function returns the amount of character contained in the provided
+ *  font.
+ *
+ *  \param er_font Font structure
+ *
+ *  \return Returns the font char count
+ */
 
-    le_size_t er_font_get_count( er_font_t const * const er_font );
+le_size_t er_font_get_count( er_font_t const * const er_font );
 
-    /*! \brief display methods
-     *
-     *  This function displays the provided string in the provided graphical
-     *  buffer using the specified font. The properties of the strings and the
-     *  graphical buffer have to be provided.
-     *
-     *  The x and y coordinates of the string are the lower-left corner of the
-     *  area on which the string is displayed. The graphical buffer is seen as
-     *  a standard OpenGL graphical buffer that is reverse in terms of y. In
-     *  addition, it is assumed to be in RGBA format.
-     *
-     *  Due to the implemented interface, only the alpha component of the string
-     *  can be specified. This allows to increase the efficiency of the string
-     *  display.
-     *
-     *  \param er_font   Font structure
-     *  \param er_string String to display
-     *  \param er_length Length of the string, in chars
-     *  \param er_value  Alpha value of the displayed string
-     *  \param er_buffer Pointer to the graphical buffer
-     *  \param er_width  Width of the graphical buffer, in pixels
-     *  \param er_height Height of the graphical buffer, in pixels
-     *  \param er_x      String display area x-coordinate
-     *  \param er_y      String display area y-coordinate
-     */
+/*! \brief display methods
+ *
+ *  This function displays the provided string in the provided graphical
+ *  buffer using the specified font. The properties of the strings and the
+ *  graphical buffer have to be provided.
+ *
+ *  The x and y coordinates of the string are the lower-left corner of the
+ *  area on which the string is displayed. The graphical buffer is seen as
+ *  a standard OpenGL graphical buffer that is reverse in terms of y. In
+ *  addition, it is assumed to be in RGBA format.
+ *
+ *  Due to the implemented interface, only the alpha component of the string
+ *  can be specified. This allows to increase the efficiency of the string
+ *  display.
+ *
+ *  \param er_font   Font structure
+ *  \param er_string String to display
+ *  \param er_length Length of the string, in chars
+ *  \param er_value  Alpha value of the displayed string
+ *  \param er_buffer Pointer to the graphical buffer
+ *  \param er_width  Width of the graphical buffer, in pixels
+ *  \param er_height Height of the graphical buffer, in pixels
+ *  \param er_x      String display area x-coordinate
+ *  \param er_y      String display area y-coordinate
+ */
 
-    le_void_t er_font_display_string( er_font_t const * const er_font, le_char_t const * const er_string, le_size_t er_length, le_byte_t const er_value, le_byte_t * const er_buffer, le_size_t const er_width, le_size_t const er_height, le_size_t er_x, le_size_t er_y );
+le_void_t er_font_display_string( er_font_t const * const er_font, le_char_t const * const er_string, le_size_t er_length, le_byte_t const er_value, le_byte_t * const er_buffer, le_size_t const er_width, le_size_t const er_height, le_size_t er_x, le_size_t er_y );
 
 /*
     header - C/C++ compatibility
  */
 
-    # ifdef __cplusplus
-    }
-    # endif
+# ifdef __cplusplus
+}
+# endif
 
 /*
     header - inclusion guard
  */
 
-    # endif
+# endif
 
