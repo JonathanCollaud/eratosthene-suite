@@ -49,7 +49,7 @@ extern "C" {
  */
 
 /* define pseudo-constructor */
-# define ER_VOXEL_C   {0, {255, 255, 255}, {0.0, 0.0, 0.0}, {1.0, 1.0, 1.0}}
+# define ER_VOXEL_C   {0, {255, 255, 255}, {0.0, 0.0, 0.0}, {5.0, 5.0, 5.0}}
 
 /*
  header - type definition
@@ -61,7 +61,7 @@ extern "C" {
 typedef struct er_voxel_struct {
 
     le_size_t vx_nb_points;
-    le_size_t vx_color[3];
+    le_data_t vx_color[3];
     le_real_t vx_edge[3];
     le_real_t vx_size[3];
 
@@ -74,7 +74,7 @@ er_voxel_t er_voxel_create(le_void_t);
 
 le_void_t er_voxel_delete( er_voxel_t * const voxel );
 
-le_void_t er_voxel_set_color(er_voxel_t * const voxel, le_size_t const color[3]);
+le_void_t er_voxel_set_color(er_voxel_t * const voxel, le_data_t const color[3]);
 
 le_void_t er_voxel_set_edge(er_voxel_t * const voxel, le_real_t const edge[3]);
 

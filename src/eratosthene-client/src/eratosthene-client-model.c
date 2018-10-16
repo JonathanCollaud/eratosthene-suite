@@ -453,6 +453,7 @@ le_void_t er_model_set_sync_tail( er_model_t * const er_model )
 
 le_void_t er_model_display_cell( er_model_t const * const er_model, er_view_t const * const er_view )
 {
+    er_cell_t * md_cell = er_model->md_cell;
 
     /* view position variables */
     le_real_t er_lon = er_view_get_lon( er_view );
@@ -480,14 +481,14 @@ le_void_t er_model_display_cell( er_model_t const * const er_model, er_view_t co
     for ( le_size_t er_parse = 0; er_parse < er_model->md_size; er_parse ++ ) {
 
         /* check d-cell flag */
-        if ( er_cell_get_flag( er_model->md_cell + er_parse, ER_CELL_DIS ) == ER_CELL_DIS ) {
+        if ( er_cell_get_flag( md_cell + er_parse, ER_CELL_DIS ) == ER_CELL_DIS ) {
 
             /* assign d-cell vertex and color pointers */
             //glVertexPointer( 3, ER_MODEL_VERTEX, LE_ARRAY_UF3, er_cell_get_pose( er_model->md_cell + er_parse ) );
             //glColorPointer ( 3, ER_MODEL_COLORS, LE_ARRAY_UF3, er_cell_get_data( er_model->md_cell + er_parse ) );
 
             /* retrieve d-cell edge array */
-            er_edge = er_cell_get_edge( er_model->md_cell + er_parse );
+            er_edge = er_cell_get_edge( md_cell + er_parse );
 
             /* d-cell matrix */
             glPushMatrix();
@@ -508,30 +509,32 @@ le_void_t er_model_display_cell( er_model_t const * const er_model, er_view_t co
 
             /* display graphical primitives */
             //glDrawArrays( GL_POINTS, 0, er_cell_get_record( er_model->md_cell + er_parse ));
-            void * curr_point = er_cell_get_pose(er_model->md_cell + er_parse);
+            le_byte_t * curr_point = (le_byte_t *) er_cell_get_pose(md_cell + er_parse);
 
-
-            le_real_t two_to_span = 1;// pow(2, er_view_get_span(er_view));
-            le_real_t size[3] = {5.0 / two_to_span , 5.0 / two_to_span, 5.0 / two_to_span};
-            for (le_size_t v = 0; v < er_cell_get_record(er_model->md_cell + er_parse); v++) {
+            le_real_t denom = pow(2, er_cell_get_size(md_cell) + er_view_get_span(er_view));
+            
+            //printf("%d\n", er_cell_get_size(md_cell));
+            
+            le_real_t size[3] = {
+                LE_ADDRESS_WGS_A * LE_ADDRESS_RAN_L / denom,
+                LE_ADDRESS_WGS_A * LE_ADDRESS_RAN_A / denom,
+                LE_ADDRESS_RAN_H / denom};
+            
+            for (le_size_t v = 0; v < er_cell_get_record(md_cell + er_parse); v++) {
 
                 er_voxel_t voxel = er_voxel_create();
-                er_voxel_set_edge(&voxel, curr_point);
-                er_voxel_set_color(&voxel, curr_point + LE_ARRAY_UF3_POSE);
+                er_voxel_set_edge(&voxel, (le_real_t *) curr_point);
+                er_voxel_set_color(&voxel, (le_data_t *) curr_point + LE_ARRAY_UF3_POSE);
                 er_voxel_set_size(&voxel, size);
                 er_voxel_display_cube(&voxel);
 
-                curr_point += 3 * (sizeof(le_real_t) + sizeof(le_data_t));
+                curr_point += LE_ARRAY_UF3;
             }
-
-
+            
             /* d-cell matrix */
             glPopMatrix();
-
         }
-
     }
-
 }
 
 le_void_t er_model_display_earth( er_view_t const * const er_view )
