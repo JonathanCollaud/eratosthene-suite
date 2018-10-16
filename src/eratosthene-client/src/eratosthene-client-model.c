@@ -511,9 +511,7 @@ le_void_t er_model_display_cell( er_model_t const * const er_model, er_view_t co
             //glDrawArrays( GL_POINTS, 0, er_cell_get_record( er_model->md_cell + er_parse ));
             le_byte_t * curr_point = (le_byte_t *) er_cell_get_pose(md_cell + er_parse);
 
-            le_real_t denom = pow(2, er_cell_get_size(md_cell) + er_view_get_span(er_view));
-            
-            //printf("%d\n", er_cell_get_size(md_cell));
+            le_real_t denom = pow(2, er_cell_get_size(md_cell + er_parse) + er_view_get_span(er_view));
             
             le_real_t size[3] = {
                 LE_ADDRESS_WGS_A * LE_ADDRESS_RAN_L / denom,
