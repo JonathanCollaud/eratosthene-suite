@@ -80,7 +80,7 @@ le_void_t er_voxel_set_edge(er_voxel_t * const voxel, le_real_t const edge[3]);
 
 le_void_t er_voxel_set_size(er_voxel_t * const voxel, le_real_t const size[3]);
 
-le_void_t er_voxel_display_cube(er_voxel_t const * const voxel);
+le_void_t er_voxel_display_cube(er_voxel_t const * const voxel, const le_real_t er_lon, const le_real_t er_lat);
 
 le_size_t er_voxel_is_full(er_voxel_t const * const voxel);
 

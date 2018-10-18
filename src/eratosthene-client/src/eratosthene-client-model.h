@@ -460,4 +460,3 @@ le_void_t er_model_display_earth( er_view_t const * const er_view );
  */
 
 # endif
-
