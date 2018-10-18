@@ -513,34 +513,9 @@ le_void_t er_model_display_cell( er_model_t const * const er_model, er_view_t co
             le_real_t denom = pow(2, er_cell_get_size(md_cell + er_parse) + er_view_get_span(er_view));
             
             le_real_t size_tmp[3] = {
-                LE_ADDRESS_WGS_A * LE_ADDRESS_RAN_A / denom,
+                LE_ADDRESS_WGS_A * LE_ADDRESS_RAN_L / denom,
                 LE_ADDRESS_RAN_H / denom,
-                LE_ADDRESS_WGS_A * LE_ADDRESS_RAN_L / denom};
-            
-            printf("(%lf, %lf, %lf)\n", size_tmp[0], size_tmp[1], size_tmp[2]);
-            
-            // Only longitude
-            /*le_real_t size[3] = {
-                er_cosl * size_tmp[0] + er_sinl * size_tmp[2],
-                size_tmp[1],
-                - er_sinl * size_tmp[0] + er_cosl * size_tmp[2]};*/
-            
-            // Only latitude
-            /*le_real_t size[3] = {
-                size_tmp[0],
-                er_cosa * size_tmp[1] - er_sina * size_tmp[2],
-                er_sina * size_tmp[1] + er_cosa * size_tmp[2]};*/
-            
-            // lat lon inverted
-            /*le_real_t size[3] = {
-                er_cosa * size_tmp[0] + er_sina * size_tmp[2],
-                er_sina * er_sinl * size_tmp[0] + er_cosl * size_tmp[1] - er_cosa * er_sinl * size_tmp[2],
-                - er_sina * er_cosl * size_tmp[0] + er_sinl * size_tmp[1] + er_cosa * er_cosl * size_tmp[2]};*/
-            
-            le_real_t size[3] = {
-                er_cosl * size_tmp[0] + er_sinl * size_tmp[2],
-                er_sinl * er_sina * size_tmp[0] + er_cosa * size_tmp[1] - er_cosl * er_sina * size_tmp[2],
-                - er_sinl * er_cosa * size_tmp[0] + er_sina * size_tmp[1] + er_cosl * er_cosa * size_tmp[2]};
+                LE_ADDRESS_WGS_A * LE_ADDRESS_RAN_A / denom};
             
             le_byte_t * curr_point = (le_byte_t *) er_cell_get_pose(md_cell + er_parse);
 

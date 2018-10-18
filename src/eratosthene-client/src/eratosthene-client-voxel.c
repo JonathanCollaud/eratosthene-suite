@@ -83,8 +83,6 @@ le_void_t er_voxel_display_cube(er_voxel_t const * const voxel, const le_real_t 
     le_real_t clat = cos(er_lat * ER_COMMON_D2R);
     le_real_t slat = sin(er_lat * ER_COMMON_D2R);
     
-    //printf("(%f, %f, %f)\n", voxel->vx_edge[0], voxel->vx_edge[1], voxel->vx_edge[2]);
-    
     for (int o = -1; o <= 1; o += 2) {
         
         point[0] = voxel->vx_edge[0] + 0.5 * o * (clon * s[0] + slon * s[2]);
