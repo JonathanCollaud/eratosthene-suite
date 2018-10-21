@@ -509,8 +509,8 @@ le_void_t er_model_display_cell( er_model_t const * const er_model, er_view_t co
             
             le_real_t size[3] = {
                 LE_ADDRESS_WGS_A * LE_ADDRESS_RAN_L / denom,
-                1024 * LE_ADDRESS_RAN_H / denom,
-                2 * LE_ADDRESS_WGS_A * LE_ADDRESS_RAN_A / denom};
+                2 * LE_ADDRESS_WGS_A * LE_ADDRESS_RAN_A / denom,
+                1024 * LE_ADDRESS_RAN_H / denom};
             
             le_byte_t * curr_point = (le_byte_t *) er_cell_get_pose(md_cell + er_parse);
 
