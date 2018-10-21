@@ -128,7 +128,6 @@ le_void_t er_voxel_display_cube(er_voxel_t const * const voxel, const le_real_t 
         glVertexPointer(3, ER_MODEL_VERTEX, 0, point);
         glColorPointer (3, ER_MODEL_COLORS, 0, color);
         
-        //glDrawArrays(GL_LINE_STRIP, 0, 8);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 8);
     }
 }
