@@ -212,21 +212,38 @@ le_size_t er_cell_set_data( er_cell_t * const er_cell )
     ( ( le_real_t * ) er_head )[1] = 0.0;
     ( ( le_real_t * ) er_head )[2] = 0.0;
 
+    
+    le_real_t denom = pow(2, er_size);
+    
+    le_real_t size[3] = {
+        LE_ADDRESS_WGS_A * LE_ADDRESS_RAN_L / denom,
+        1024 * LE_ADDRESS_RAN_H / denom,
+        2 * LE_ADDRESS_WGS_A * LE_ADDRESS_RAN_A / denom};
+    
     /* parsing socket array */
     while ( ( ( er_head += LE_ARRAY_UF3 ) - er_base ) < er_size ) {
 
-        /* coordinates conversion - points */
+        er_voxel_t voxel = er_voxel_create();
+        er_voxel_set_edge(&voxel, (le_real_t *) er_head);
+        er_voxel_set_color(&voxel, (le_data_t *) er_head + LE_ARRAY_UF3_POSE);
+        er_voxel_set_size(&voxel, size);
+        
+        er_voxel_display_cube(&voxel, er_head[0], er_head[1]);
+        
+        
+        /* coordinates conversion - points * /
         ( ( le_real_t * ) er_head )[2] += LE_ADDRESS_WGS_A;
 
-        /* coordinates conversion - points */
+        /* coordinates conversion - points * /
         er_opta = ( ( le_real_t * ) er_head )[0];
         er_optb = ( ( le_real_t * ) er_head )[1];
 
-        /* coordinates conversion - points */
+        /* coordinates conversion - points * /
         ( ( le_real_t * ) er_head )[1] = ( ( le_real_t * ) er_head )[2] * sin( er_optb ) - er_cell->ce_edge[1];
         ( ( le_real_t * ) er_head )[2] = ( ( le_real_t * ) er_head )[2] * cos( er_optb );
         ( ( le_real_t * ) er_head )[0] = ( ( le_real_t * ) er_head )[2] * sin( er_opta ) - er_cell->ce_edge[0];
         ( ( le_real_t * ) er_head )[2] = ( ( le_real_t * ) er_head )[2] * cos( er_opta ) - er_cell->ce_edge[2];
+        */
 
     }
 
