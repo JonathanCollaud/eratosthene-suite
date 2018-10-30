@@ -4,6 +4,10 @@
  *      Nils Hamel - nils.hamel@bluewin.ch
  *      Copyright (c) 2016-2018 DHLAB, EPFL
  *
+ *  Contributors
+ *
+ *      Jonathan Collaud - jonathan.collaud@epfl.ch
+ *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
@@ -45,6 +49,7 @@ extern "C" {
 
 # include "eratosthene-client-common.h"
 # include "eratosthene-client-geodesy.h"
+# include "eratosthene-client-octree.h"
 # include "eratosthene-client-voxel.h"
 
 /*
@@ -56,7 +61,7 @@ extern "C" {
  */
 
 /* define pseudo-constructor */
-# define ER_CELL_C   { 0, LE_ADDRESS_C, LE_ARRAY_C, { 0.0 } }
+# define ER_CELL_C   { 0, LE_ADDRESS_C, LE_ARRAY_C, { 0.0 }, NULL }
 
 /* define flags */
 # define ER_CELL_SYN ( 0x01 << 0 )
@@ -120,6 +125,7 @@ typedef struct er_cell_struct {
     le_address_t ce_addr;
     le_array_t   ce_data;
     le_real_t    ce_edge[6];
+    er_node_t *  ce_octree;
 
 } er_cell_t;
 

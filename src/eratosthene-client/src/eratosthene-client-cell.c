@@ -4,6 +4,10 @@
  *      Nils Hamel - nils.hamel@bluewin.ch
  *      Copyright (c) 2016-2018 DHLAB, EPFL
  *
+ *  Contributors
+ *
+ *      Jonathan Collaud - jonathan.collaud@epfl.ch
+ *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
@@ -182,6 +186,9 @@ le_size_t er_cell_set_data( er_cell_t * const er_cell )
 
     /* size variables */
     le_size_t er_size = 0;
+    
+    er_node_t children[8];
+    er_node_t er_root = er_octree_create(NULL, children);
 
     /* optimisation variables */
     le_real_t er_opta = 0.0;
@@ -213,23 +220,29 @@ le_size_t er_cell_set_data( er_cell_t * const er_cell )
     ( ( le_real_t * ) er_head )[2] = 0.0;
 
     
-    le_real_t denom = pow(2, er_size);
-    
-    le_real_t size[3] = {
-        LE_ADDRESS_WGS_A * LE_ADDRESS_RAN_L / denom,
-        1024 * LE_ADDRESS_RAN_H / denom,
-        2 * LE_ADDRESS_WGS_A * LE_ADDRESS_RAN_A / denom};
-    
     /* parsing socket array */
+    er_node_t * node;
+    le_size_t depth;
     while ( ( ( er_head += LE_ARRAY_UF3 ) - er_base ) < er_size ) {
 
-        er_voxel_t voxel = er_voxel_create();
-        er_voxel_set_edge(&voxel, (le_real_t *) er_head);
-        er_voxel_set_color(&voxel, (le_data_t *) er_head + LE_ARRAY_UF3_POSE);
-        er_voxel_set_size(&voxel, size);
+        node = &er_root;
+        depth = 0;
         
-        er_voxel_display_cube(&voxel, er_head[0], er_head[1]);
-        
+        while (depth++ < le_address_get_span(&er_cell->ce_addr)) {
+            if (node){
+                
+            }
+            
+            if (node){
+                
+            }
+            
+            if (node){
+                
+            }
+            
+            er_node_add_point(node);
+        }
         
         /* coordinates conversion - points * /
         ( ( le_real_t * ) er_head )[2] += LE_ADDRESS_WGS_A;

@@ -22,12 +22,18 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! \file   eratosthene-client-model.h
+ *  \author Nils Hamel <nils.hamel@bluewin.ch>
+ *
+ *  eratosthene-suite - client - model
+ */
+
 /*
  header - inclusion guard
  */
 
-# ifndef __ER_CLIENT_VOXEL__
-# define __ER_CLIENT_VOXEL__
+# ifndef __ER_CLIENT_OCTREE
+# define __ER_CLIENT_OCTREE
 
 /*
  header - C/C++ compatibility
@@ -40,7 +46,6 @@ extern "C" {
 /*
  header - internal includes
  */
-
 # include "eratosthene-client-common.h"
 
 /*
@@ -52,7 +57,19 @@ extern "C" {
  */
 
 /* define pseudo-constructor */
-# define ER_VOXEL_C   {0, {255, 255, 255}, {0.0, 0.0, 0.0}, {5.0, 5.0, 5.0}}
+# define ER_OCTREE_C {NULL, NULL, 0}
+
+/* define pseudo-initialiser */
+
+/* define model stack */
+
+/* define display array types */
+
+/* define model color */
+
+/*
+ header - preprocessor macros
+ */
 
 /*
  header - type definition
@@ -61,31 +78,20 @@ extern "C" {
 /*
  header - structures
  */
-typedef struct er_voxel_struct {
+typedef struct er_node_struct {
 
-    le_size_t vx_nb_points;
-    le_data_t vx_color[3];
-    le_real_t vx_edge[3];
-    le_real_t vx_size[3];
+    struct er_node_struct * nd_parent;
+    struct er_node_struct * nd_children;
+    le_size_t nd_size;
 
-} er_voxel_t;
+} er_node_t;
 
 /*
  header - function prototypes
  */
-er_voxel_t er_voxel_create(le_void_t);
-
-le_void_t er_voxel_delete( er_voxel_t * const voxel );
-
-le_void_t er_voxel_set_color(er_voxel_t * const voxel, le_data_t const color[3]);
-
-le_void_t er_voxel_set_edge(er_voxel_t * const voxel, le_real_t const edge[3]);
-
-le_void_t er_voxel_set_size(er_voxel_t * const voxel, le_real_t const size[3]);
-
-le_void_t er_voxel_display_cube(er_voxel_t const * const voxel, const le_real_t er_lon, const le_real_t er_lat);
-
-le_size_t er_voxel_is_full(er_voxel_t const * const voxel);
+    er_node_t er_octree_create(er_node_t * nd_parent, er_node_t nd_children[8]);
+    
+    le_void_t er_node_add_point(er_node_t * node);
 
 /*
  header - C/C++ compatibility

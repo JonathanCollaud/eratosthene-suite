@@ -621,31 +621,31 @@ le_void_t er_client_callback_keydown( SDL_KeyboardEvent er_event, er_client_t * 
 
     }
     break;
-            
+
     case ( SDLK_l ) : {
-            
+
         /* update span value */
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            
+
     }
     break;
-    
+
     case ( SDLK_f ) : {
-            
+
         /* update span value */
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            
+
     }
     break;
-            
+
     case ( SDLK_p ) : {
-            
+
         /* update span value */
         glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
-            
+
     }
     break;
-            
+
     }
 
 }
