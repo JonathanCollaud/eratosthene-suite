@@ -221,28 +221,8 @@ le_size_t er_cell_set_data( er_cell_t * const er_cell )
 
     
     /* parsing socket array */
-    er_node_t * node;
-    le_size_t depth;
+    le_size_t depth = 0;
     while ( ( ( er_head += LE_ARRAY_UF3 ) - er_base ) < er_size ) {
-
-        node = &er_root;
-        depth = 0;
-        
-        while (depth++ < le_address_get_span(&er_cell->ce_addr)) {
-            if (node){
-                
-            }
-            
-            if (node){
-                
-            }
-            
-            if (node){
-                
-            }
-            
-            er_node_add_point(node);
-        }
         
         /* coordinates conversion - points * /
         ( ( le_real_t * ) er_head )[2] += LE_ADDRESS_WGS_A;
@@ -257,7 +237,6 @@ le_size_t er_cell_set_data( er_cell_t * const er_cell )
         ( ( le_real_t * ) er_head )[0] = ( ( le_real_t * ) er_head )[2] * sin( er_opta ) - er_cell->ce_edge[0];
         ( ( le_real_t * ) er_head )[2] = ( ( le_real_t * ) er_head )[2] * cos( er_opta ) - er_cell->ce_edge[2];
         */
-
     }
 
     /* return cell size */
