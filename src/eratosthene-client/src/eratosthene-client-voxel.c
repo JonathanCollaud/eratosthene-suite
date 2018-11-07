@@ -65,11 +65,15 @@ le_void_t er_voxel_set_size(er_voxel_t * const voxel, le_real_t const size[3])
 
 le_void_t er_voxel_display_cube(er_voxel_t const * const voxel, const le_real_t er_lon, const le_real_t er_lat)
 {
-    le_real_t point[24];
+    /*le_real_t point[24];
     le_data_t color[24];
-    le_real_t normal[24];
+    le_real_t normal[24];*/
+    
+    le_real_t point[12];
+    le_data_t color[12];
+    le_real_t normal[12];
 
-    for (le_size_t i = 0; i < 24; i++) {
+    for (le_size_t i = 0; i < 12; i++) {
         color[i] = voxel->vx_color[i % 3];
     }
     
@@ -87,6 +91,165 @@ le_void_t er_voxel_display_cube(er_voxel_t const * const voxel, const le_real_t 
     le_real_t inv_square_three = 1 / sqrt(3.0);
     
     glCullFace( GL_FRONT );
+    
+    // EAST
+    point[0] = voxel->vx_edge[0] + 0.5 * (clon * s[0] - slon * s[2]);
+    point[1] = voxel->vx_edge[1] + 0.5 * (slon * clat * s[0] + slat * s[1] + clon * clat * s[2]);
+    point[2] = voxel->vx_edge[2] + 0.5 * (-slon * slat * s[0] + clat * s[1] - clon * slat * s[2]);
+    
+    point[3] = voxel->vx_edge[0] + 0.5 * (clon * s[0] - slon * s[2]);
+    point[4] = voxel->vx_edge[1] + 0.5 * (slon * clat * s[0] - slat * s[1] + clon * clat * s[2]);
+    point[5] = voxel->vx_edge[2] + 0.5 * (-slon * slat * s[0] - clat * s[1] - clon * slat * s[2]);
+    
+    point[6] = voxel->vx_edge[0] + 0.5 * (clon * s[0] + slon * s[2]);
+    point[7] = voxel->vx_edge[1] + 0.5 * (slon * clat * s[0] - slat * s[1] - clon * clat * s[2]);
+    point[8] = voxel->vx_edge[2] + 0.5 * (-slon * slat * s[0] - clat * s[1] + clon * slat * s[2]);
+    
+    point[9] = voxel->vx_edge[0] + 0.5 * (clon * s[0] + slon * s[2]);
+    point[10] = voxel->vx_edge[1] + 0.5 * (slon * clat * s[0] + slat * s[1] - clon * clat * s[2]);
+    point[11] = voxel->vx_edge[2] + 0.5 * (-slon * slat * s[0] + clat * s[1] + clon * slat * s[2]);
+    
+    normal[0] = normal[3] = normal[6] = normal[9] = 1.0;
+    normal[1] = normal[4] = normal[7] = normal[10] = 0.0;
+    normal[2] = normal[5] = normal[8] = normal[11] = 0.0;
+    
+    glVertexPointer(3, ER_MODEL_VERTEX, 0, point);
+    glColorPointer(3, ER_MODEL_COLORS, 0, color);
+    glNormalPointer(ER_MODEL_VERTEX, 0, normal);
+    glDrawArrays(GL_QUADS, 0, 4);
+    
+    // WEST
+    point[0] = voxel->vx_edge[0] - 0.5 * (clon * s[0] - slon * s[2]);
+    point[1] = voxel->vx_edge[1] - 0.5 * (slon * clat * s[0] + slat * s[1] + clon * clat * s[2]);
+    point[2] = voxel->vx_edge[2] - 0.5 * (-slon * slat * s[0] + clat * s[1] - clon * slat * s[2]);
+
+    point[3] = voxel->vx_edge[0] - 0.5 * (clon * s[0] + slon * s[2]);
+    point[4] = voxel->vx_edge[1] - 0.5 * (slon * clat * s[0] + slat * s[1] - clon * clat * s[2]);
+    point[5] = voxel->vx_edge[2] - 0.5 * (-slon * slat * s[0] + clat * s[1] + clon * slat * s[2]);
+    
+    point[6] = voxel->vx_edge[0] - 0.5 * (clon * s[0] + slon * s[2]);
+    point[7] = voxel->vx_edge[1] - 0.5 * (slon * clat * s[0] - slat * s[1] - clon * clat * s[2]);
+    point[8] = voxel->vx_edge[2] - 0.5 * (-slon * slat * s[0] - clat * s[1] + clon * slat * s[2]);
+    
+    point[9] = voxel->vx_edge[0] - 0.5 * (clon * s[0] - slon * s[2]);
+    point[10] = voxel->vx_edge[1] - 0.5 * (slon * clat * s[0] - slat * s[1] + clon * clat * s[2]);
+    point[11] = voxel->vx_edge[2] - 0.5 * (-slon * slat * s[0] - clat * s[1] - clon * slat * s[2]);
+    
+    normal[0] = normal[3] = normal[6] = normal[9] = -1.0;
+    normal[1] = normal[4] = normal[7] = normal[10] = 0.0;
+    normal[2] = normal[5] = normal[8] = normal[11] = 0.0;
+    
+    glVertexPointer(3, ER_MODEL_VERTEX, 0, point);
+    glColorPointer(3, ER_MODEL_COLORS, 0, color);
+    glNormalPointer(ER_MODEL_VERTEX, 0, normal);
+    glDrawArrays(GL_QUADS, 0, 4);
+    
+    // UP
+    point[0] = voxel->vx_edge[0] + 0.5 * (clon * s[0] - slon * s[2]);
+    point[1] = voxel->vx_edge[1] + 0.5 * (slon * clat * s[0] + slat * s[1] + clon * clat * s[2]);
+    point[2] = voxel->vx_edge[2] + 0.5 * (-slon * slat * s[0] + clat * s[1] - clon * slat * s[2]);
+    
+    point[3] = voxel->vx_edge[0] + 0.5 * (clon * s[0] + slon * s[2]);
+    point[4] = voxel->vx_edge[1] + 0.5 * (slon * clat * s[0] + slat * s[1] - clon * clat * s[2]);
+    point[5] = voxel->vx_edge[2] + 0.5 * (-slon * slat * s[0] + clat * s[1] + clon * slat * s[2]);
+    
+    point[6] = voxel->vx_edge[0] + 0.5 * (-clon * s[0] + slon * s[2]);
+    point[7] = voxel->vx_edge[1] + 0.5 * (-slon * clat * s[0] + slat * s[1] - clon * clat * s[2]);
+    point[8] = voxel->vx_edge[2] + 0.5 * (slon * slat * s[0] + clat * s[1] + clon * slat * s[2]);
+    
+    point[9] = voxel->vx_edge[0] + 0.5 * (-clon * s[0] - slon * s[2]);
+    point[10] = voxel->vx_edge[1] + 0.5 * (-slon * clat * s[0] + slat * s[1] + clon * clat * s[2]);
+    point[11] = voxel->vx_edge[2] + 0.5 * (+slon * slat * s[0] + clat * s[1] - clon * slat * s[2]);
+    
+    normal[0] = normal[3] = normal[6] = normal[9] = 0.0;
+    normal[1] = normal[4] = normal[7] = normal[10] = 1.0;
+    normal[2] = normal[5] = normal[8] = normal[11] = 0.0;
+    
+    glVertexPointer(3, ER_MODEL_VERTEX, 0, point);
+    glColorPointer(3, ER_MODEL_COLORS, 0, color);
+    glNormalPointer(ER_MODEL_VERTEX, 0, normal);
+    glDrawArrays(GL_QUADS, 0, 4);
+    
+    // BOTTOM
+    point[0] = voxel->vx_edge[0] - 0.5 * (clon * s[0] - slon * s[2]);
+    point[1] = voxel->vx_edge[1] - 0.5 * (slon * clat * s[0] + slat * s[1] + clon * clat * s[2]);
+    point[2] = voxel->vx_edge[2] - 0.5 * (-slon * slat * s[0] + clat * s[1] - clon * slat * s[2]);
+    
+    point[3] = voxel->vx_edge[0] - 0.5 * (-clon * s[0] - slon * s[2]);
+    point[4] = voxel->vx_edge[1] - 0.5 * (-slon * clat * s[0] + slat * s[1] + clon * clat * s[2]);
+    point[5] = voxel->vx_edge[2] - 0.5 * (slon * slat * s[0] + clat * s[1] - clon * slat * s[2]);
+    
+    point[6] = voxel->vx_edge[0] - 0.5 * (-clon * s[0] + slon * s[2]);
+    point[7] = voxel->vx_edge[1] - 0.5 * (-slon * clat * s[0] + slat * s[1] - clon * clat * s[2]);
+    point[8] = voxel->vx_edge[2] - 0.5 * (slon * slat * s[0] + clat * s[1] + clon * slat * s[2]);
+    
+    point[9] = voxel->vx_edge[0] - 0.5 * (clon * s[0] + slon * s[2]);
+    point[10] = voxel->vx_edge[1] - 0.5 * (slon * clat * s[0] + slat * s[1] - clon * clat * s[2]);
+    point[11] = voxel->vx_edge[2] - 0.5 * (-slon * slat * s[0] + clat * s[1] + clon * slat * s[2]);
+    
+    normal[0] = normal[3] = normal[6] = normal[9] = 0.0;
+    normal[1] = normal[4] = normal[7] = normal[10] = -1.0;
+    normal[2] = normal[5] = normal[8] = normal[11] = 0.0;
+    
+    glVertexPointer(3, ER_MODEL_VERTEX, 0, point);
+    glColorPointer(3, ER_MODEL_COLORS, 0, color);
+    glNormalPointer(ER_MODEL_VERTEX, 0, normal);
+    glDrawArrays(GL_QUADS, 0, 4);
+    
+    // NORTH
+    point[0] = voxel->vx_edge[0] + 0.5 * (clon * s[0] - slon * s[2]);
+    point[1] = voxel->vx_edge[1] + 0.5 * (slon * clat * s[0] + slat * s[1] + clon * clat * s[2]);
+    point[2] = voxel->vx_edge[2] + 0.5 * (-slon * slat * s[0] + clat * s[1] - clon * slat * s[2]);
+    
+    point[3] = voxel->vx_edge[0] + 0.5 * (-clon * s[0] - slon * s[2]);
+    point[4] = voxel->vx_edge[1] + 0.5 * (-slon * clat * s[0] + slat * s[1] + clon * clat * s[2]);
+    point[5] = voxel->vx_edge[2] + 0.5 * (slon * slat * s[0] + clat * s[1] - clon * slat * s[2]);
+    
+    point[6] = voxel->vx_edge[0] + 0.5 * (-clon * s[0] - slon * s[2]);
+    point[7] = voxel->vx_edge[1] + 0.5 * (-slon * clat * s[0] - slat * s[1] + clon * clat * s[2]);
+    point[8] = voxel->vx_edge[2] + 0.5 * (slon * slat * s[0] - clat * s[1] - clon * slat * s[2]);
+    
+    point[9] = voxel->vx_edge[0] + 0.5 * (clon * s[0] - slon * s[2]);
+    point[10] = voxel->vx_edge[1] + 0.5 * (slon * clat * s[0] - slat * s[1] + clon * clat * s[2]);
+    point[11] = voxel->vx_edge[2] + 0.5 * (-slon * slat * s[0] - clat * s[1] - clon * slat * s[2]);
+    
+    normal[0] = normal[3] = normal[6] = normal[9] = 0.0;
+    normal[1] = normal[4] = normal[7] = normal[10] = 0.0;
+    normal[2] = normal[5] = normal[8] = normal[11] = -1.0;
+    
+    glVertexPointer(3, ER_MODEL_VERTEX, 0, point);
+    glColorPointer(3, ER_MODEL_COLORS, 0, color);
+    glNormalPointer(ER_MODEL_VERTEX, 0, normal);
+    glDrawArrays(GL_QUADS, 0, 4);
+    
+    // SOUTH
+    point[0] = voxel->vx_edge[0] - 0.5 * (clon * s[0] - slon * s[2]);
+    point[1] = voxel->vx_edge[1] - 0.5 * (slon * clat * s[0] + slat * s[1] + clon * clat * s[2]);
+    point[2] = voxel->vx_edge[2] - 0.5 * (-slon * slat * s[0] + clat * s[1] - clon * slat * s[2]);
+    
+    point[3] = voxel->vx_edge[0] - 0.5 * (clon * s[0] - slon * s[2]);
+    point[4] = voxel->vx_edge[1] - 0.5 * (slon * clat * s[0] - slat * s[1] + clon * clat * s[2]);
+    point[5] = voxel->vx_edge[2] - 0.5 * (-slon * slat * s[0] - clat * s[1] - clon * slat * s[2]);
+    
+    point[6] = voxel->vx_edge[0] - 0.5 * (-clon * s[0] - slon * s[2]);
+    point[7] = voxel->vx_edge[1] - 0.5 * (-slon * clat * s[0] - slat * s[1] + clon * clat * s[2]);
+    point[8] = voxel->vx_edge[2] - 0.5 * (slon * slat * s[0] - clat * s[1] - clon * slat * s[2]);
+    
+    point[9] = voxel->vx_edge[0] - 0.5 * (-clon * s[0] - slon * s[2]);
+    point[10] = voxel->vx_edge[1] - 0.5 * (-slon * clat * s[0] + slat * s[1] + clon * clat * s[2]);
+    point[11] = voxel->vx_edge[2] - 0.5 * (slon * slat * s[0] + clat * s[1] - clon * slat * s[2]);
+    
+    normal[0] = normal[3] = normal[6] = normal[9] = 0.0;
+    normal[1] = normal[4] = normal[7] = normal[10] = 0.0;
+    normal[2] = normal[5] = normal[8] = normal[11] = 1.0;
+    
+    glVertexPointer(3, ER_MODEL_VERTEX, 0, point);
+    glColorPointer(3, ER_MODEL_COLORS, 0, color);
+    glNormalPointer(ER_MODEL_VERTEX, 0, normal);
+    glDrawArrays(GL_QUADS, 0, 4);
+    
+    
+    /*glCullFace( GL_FRONT );
     for (int o = -1; o <= 1; o += 2) {
         
         point[0] = voxel->vx_edge[0] + 0.5 * o * (clon * s[0] - slon * s[2]);
@@ -152,7 +315,7 @@ le_void_t er_voxel_display_cube(er_voxel_t const * const voxel, const le_real_t 
         glDrawArrays(GL_TRIANGLE_FAN, 0, 8);
         
         glCullFace( GL_BACK );
-    }
+    }*/
 }
 
 le_size_t er_voxel_is_full(er_voxel_t const * const voxel)
