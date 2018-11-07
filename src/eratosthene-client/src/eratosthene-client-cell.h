@@ -45,6 +45,7 @@ extern "C" {
 
 # include "eratosthene-client-common.h"
 # include "eratosthene-client-geodesy.h"
+# include "eratosthene-client-voxel.h"
 
 /*
     header - external includes

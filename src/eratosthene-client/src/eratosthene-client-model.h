@@ -51,7 +51,6 @@ extern "C" {
 # include "eratosthene-client-cell.h"
 # include "eratosthene-client-geodesy.h"
 # include "eratosthene-client-view.h"
-# include "eratosthene-client-voxel.h"
 
 /*
     header - external includes
@@ -179,8 +178,8 @@ typedef struct er_model_struct {
     le_size_t   md_syna;
     le_size_t   md_synb;
 
-    er_cell_t * md_cell;
-    er_cell_t * md_virt;
+    struct er_cell_struct * md_cell;
+    struct er_cell_struct * md_virt;
 
     le_array_t  md_addr;
 

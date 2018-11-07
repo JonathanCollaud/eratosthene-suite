@@ -175,63 +175,103 @@ le_size_t er_cell_set_sync( er_cell_t * const er_cell, le_array_t * const er_arr
 
 le_size_t er_cell_set_data( er_cell_t * const er_cell )
 {
-
-    /* pointer variables */
-    le_byte_t * er_head = NULL;
-    le_byte_t * er_base = NULL;
-
     /* size variables */
     le_size_t er_size = 0;
+    
+    /* check d-cell flag */
+    if (er_cell_get_flag(er_cell, ER_CELL_DIS) == ER_CELL_DIS) {
+        
+        /* pointer variables */
+        le_byte_t * er_head = NULL;
+        le_byte_t * er_base = NULL;
 
-    /* optimisation variables */
-    le_real_t er_opta = 0.0;
-    le_real_t er_optb = 0.0;
 
-    /* retrieve array size */
-    if ( ( er_size = le_array_get_size( & er_cell->ce_data ) ) == 0 ) {
+        /* optimisation variables */
+        le_real_t er_opta = 0.0;
+        le_real_t er_optb = 0.0;
 
-        /* return cell size */
-        return( er_size );
+        /* retrieve array size */
+        if ( ( er_size = le_array_get_size( & er_cell->ce_data ) ) == 0 ) {
+            
+            /* return cell size */
+            return( er_size );
 
-    }
+        }
+        
+        /* retrieve array pointer * /
+        er_head = er_base = le_array_get_byte( & er_cell->ce_data );
 
-    /* retrieve array pointer */
-    er_head = er_base = le_array_get_byte( & er_cell->ce_data );
+        /* coordinates conversion - edge * /
+        er_cell->ce_edge[2] = ( ( le_real_t * ) er_head )[2] + LE_ADDRESS_WGS_A;
 
-    /* coordinates conversion - edge */
-    er_cell->ce_edge[2] = ( ( le_real_t * ) er_head )[2] + LE_ADDRESS_WGS_A;
+        /* coordinates conversion - edge * /
+        er_cell->ce_edge[1] = er_cell->ce_edge[2] * sin( ( ( le_real_t * ) er_head )[1] );
+        er_cell->ce_edge[2] = er_cell->ce_edge[2] * cos( ( ( le_real_t * ) er_head )[1] );
+        er_cell->ce_edge[0] = er_cell->ce_edge[2] * sin( ( ( le_real_t * ) er_head )[0] );
+        er_cell->ce_edge[2] = er_cell->ce_edge[2] * cos( ( ( le_real_t * ) er_head )[0] );
 
-    /* coordinates conversion - edge */
-    er_cell->ce_edge[1] = er_cell->ce_edge[2] * sin( ( ( le_real_t * ) er_head )[1] );
-    er_cell->ce_edge[2] = er_cell->ce_edge[2] * cos( ( ( le_real_t * ) er_head )[1] );
-    er_cell->ce_edge[0] = er_cell->ce_edge[2] * sin( ( ( le_real_t * ) er_head )[0] );
-    er_cell->ce_edge[2] = er_cell->ce_edge[2] * cos( ( ( le_real_t * ) er_head )[0] );
+        /* inital points coordinates * /
+        ( ( le_real_t * ) er_head )[0] = 0.0;
+        ( ( le_real_t * ) er_head )[1] = 0.0;
+        ( ( le_real_t * ) er_head )[2] = 0.0;*/
+        
+        le_size_t span = le_address_get_span(&er_cell->ce_addr);
+        le_size_t raster[span * span * span];
+        
+        le_real_t * edge = er_cell_get_edge(er_cell);
+        le_size_t x = 0;
+        le_size_t y = 0;
+        le_size_t z = 0;
+        
+        le_real_t denom = pow(2, er_cell_get_size(er_cell) + span);
+        
+        le_real_t size[3] = {
+            LE_ADDRESS_WGS_A * LE_ADDRESS_RAN_L / denom,
+            LE_ADDRESS_WGS_A * LE_ADDRESS_RAN_A / denom,
+            LE_ADDRESS_RAN_H / denom};
+        
+        /* parsing socket array */
+        while ( ( ( er_head += LE_ARRAY_UF3 ) - er_base ) < er_size ) {
+            
+            x = floor(edge[0]);
+            y = floor(edge[1]);
+            z = floor(edge[2]);
+            
+            raster[x * span * span + y * span + z] = 1;
+            
+            /* coordinates conversion - points * /
+            ( ( le_real_t * ) er_head )[2] += LE_ADDRESS_WGS_A;
 
-    /* inital points coordinates */
-    ( ( le_real_t * ) er_head )[0] = 0.0;
-    ( ( le_real_t * ) er_head )[1] = 0.0;
-    ( ( le_real_t * ) er_head )[2] = 0.0;
+            /* coordinates conversion - points * /
+            er_opta = ( ( le_real_t * ) er_head )[0];
+            er_optb = ( ( le_real_t * ) er_head )[1];
 
-    /* parsing socket array */
-    while ( ( ( er_head += LE_ARRAY_UF3 ) - er_base ) < er_size ) {
+            /* coordinates conversion - points * /
+            ( ( le_real_t * ) er_head )[1] = ( ( le_real_t * ) er_head )[2] * sin( er_optb ) - er_cell->ce_edge[1];
+            ( ( le_real_t * ) er_head )[2] = ( ( le_real_t * ) er_head )[2] * cos( er_optb );
+            ( ( le_real_t * ) er_head )[0] = ( ( le_real_t * ) er_head )[2] * sin( er_opta ) - er_cell->ce_edge[0];
+            ( ( le_real_t * ) er_head )[2] = ( ( le_real_t * ) er_head )[2] * cos( er_opta ) - er_cell->ce_edge[2];*/
 
-        /* coordinates conversion - points */
-        ( ( le_real_t * ) er_head )[2] += LE_ADDRESS_WGS_A;
-
-        /* coordinates conversion - points */
-        er_opta = ( ( le_real_t * ) er_head )[0];
-        er_optb = ( ( le_real_t * ) er_head )[1];
-
-        /* coordinates conversion - points */
-        ( ( le_real_t * ) er_head )[1] = ( ( le_real_t * ) er_head )[2] * sin( er_optb ) - er_cell->ce_edge[1];
-        ( ( le_real_t * ) er_head )[2] = ( ( le_real_t * ) er_head )[2] * cos( er_optb );
-        ( ( le_real_t * ) er_head )[0] = ( ( le_real_t * ) er_head )[2] * sin( er_opta ) - er_cell->ce_edge[0];
-        ( ( le_real_t * ) er_head )[2] = ( ( le_real_t * ) er_head )[2] * cos( er_opta ) - er_cell->ce_edge[2];
-
+        }
+        
+        for(le_size_t i = 303; i < span * span * span; i++){
+            if (raster[i]) {
+                
+                er_voxel_t voxel = er_voxel_create();
+                edge[0] = i % span;
+                edge[1] = (i / span) % span;
+                edge[2] = i / (span * span);
+                
+                er_voxel_set_edge(&voxel, edge);
+                er_voxel_set_color(&voxel, er_cell_get_data(er_cell));
+                er_voxel_set_size(&voxel, size);
+                
+                er_voxel_display_cube(&voxel, 6.16, 46.2);
+            }
+        }
     }
 
     /* return cell size */
     return( er_size );
-
 }
 
