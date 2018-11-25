@@ -340,32 +340,32 @@ le_void_t er_client_loops(  er_client_t * const er_client, SDL_Window * const er
     /* light direction */
     glLightfv( GL_LIGHT0, GL_POSITION, er_vector );
 
-    /* color array variables * /
+    /* color array variables */
     float er_color[4] = ER_MODEL_SPACE;
 
-    /* color buffer clear values * /
+    /* color buffer clear values */
     glClearColor( er_color[0], er_color[1], er_color[2], er_color[3] );
 
-    /* depth buffer clear values * /
+    /* depth buffer clear values */
     glClearDepth( 1.0 );
 
-    /* opengl features configuration * /
+    /* opengl features configuration */
     glEnable( GL_DEPTH_TEST );
     glEnable( GL_BLEND      );
 
-    /* opengl fog configuration * /
+    /* opengl fog configuration */
     glFogf ( GL_FOG_MODE   , GL_LINEAR );
     glFogf ( GL_FOG_DENSITY, 0.3       );
     glFogfv( GL_FOG_COLOR  , er_color  );
 
-    /* opengl blending configuration * /
+    /* opengl blending configuration */
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
-    /* enable vertex and color arrays * /
+    /* enable vertex and color arrays */
     glEnableClientState( GL_VERTEX_ARRAY );
     glEnableClientState( GL_COLOR_ARRAY  );
 
-    /* opengl point size * /
+    /* opengl point size */
     glPointSize( 2.0 );
 
     /* disable dynamic thread */
