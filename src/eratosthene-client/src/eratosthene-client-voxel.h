@@ -73,7 +73,7 @@ typedef struct er_voxel_struct {
 /*
  header - function prototypes
  */
-er_voxel_t er_voxel_create(le_void_t);
+er_voxel_t * er_voxel_create(le_void_t);
 
 le_void_t er_voxel_delete( er_voxel_t * const voxel );
 

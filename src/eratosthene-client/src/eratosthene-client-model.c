@@ -503,7 +503,9 @@ le_void_t er_model_display_cell( er_model_t const * const er_model, er_view_t co
             glRotated( - er_lon, 0.0, 1.0, 0.0 );
 
             /* display graphical primitives */
-
+            er_cell_display(md_cell);
+            
+            /*
             le_real_t denom = pow(2, er_cell_get_size(md_cell + er_parse) + er_view_get_span(er_view));
 
             le_real_t size[3] = {

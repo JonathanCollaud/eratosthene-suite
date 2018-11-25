@@ -24,13 +24,13 @@
 
 #include "eratosthene-client-voxel.h"
 
-er_voxel_t er_voxel_create(le_void_t)
+er_voxel_t * er_voxel_create(le_void_t)
 {
     /* created structure variables */
     er_voxel_t er_voxel = ER_VOXEL_C;
 
     /* return created structure */
-    return er_voxel;
+    return &er_voxel;
 }
 
 le_void_t er_voxel_delete( er_voxel_t * const er_voxel )
@@ -125,10 +125,10 @@ le_void_t er_voxel_display_cube(er_voxel_t const * const voxel, const le_real_t 
 
         point[19] = point[16] = point[13] = point[10] - s * voxel->vx_size[1];*/
 
-        glVertexPointer(3, GL_DOUBLE, 0, point);
-        glColorPointer (3, GL_UNSIGNED_BYTE, 0, color);
+        //glVertexPointer(3, GL_DOUBLE, 0, point);
+        //glColorPointer (3, GL_UNSIGNED_BYTE, 0, color);
 
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 8);
+        //glDrawArrays(GL_TRIANGLE_FAN, 0, 8);
     }
 }
 

@@ -49,8 +49,6 @@ extern "C" {
 
 # include "eratosthene-client-common.h"
 # include "eratosthene-client-geodesy.h"
-# include "eratosthene-client-octree.h"
-# include "eratosthene-client-voxel.h"
 
 /*
     header - external includes
@@ -61,7 +59,7 @@ extern "C" {
  */
 
 /* define pseudo-constructor */
-# define ER_CELL_C   { 0, LE_ADDRESS_C, LE_ARRAY_C, { 0.0 }, NULL }
+# define ER_CELL_C   { 0, LE_ADDRESS_C, LE_ARRAY_C, { 0.0 }, 0, NULL, NULL, NULL, NULL }
 
 /* define flags */
 # define ER_CELL_SYN ( 0x01 << 0 )
@@ -125,7 +123,10 @@ typedef struct er_cell_struct {
     le_address_t ce_addr;
     le_array_t   ce_data;
     le_real_t    ce_edge[6];
-    er_node_t *  ce_octree;
+    le_size_t   ce_prim_cnt;
+    le_real_t * ce_vertex_pt;
+    le_real_t * ce_normal_pt;
+    le_data_t * ce_color_pt;
 
 } er_cell_t;
 
@@ -373,6 +374,10 @@ le_size_t er_cell_set_sync( er_cell_t * const er_cell, le_array_t * const er_arr
  */
 
 le_size_t er_cell_set_data( er_cell_t * const er_cell );
+    
+
+
+le_void_t er_cell_display( er_cell_t * const er_cell );
 
 /*
     header - C/C++ compatibility
