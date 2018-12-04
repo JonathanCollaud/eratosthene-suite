@@ -219,16 +219,26 @@ le_size_t er_cell_set_data( er_cell_t * const er_cell )
     er_cell->ce_edge[0] = er_cell->ce_edge[2] * sin( ( ( le_real_t * ) er_head )[0] );
     er_cell->ce_edge[2] = er_cell->ce_edge[2] * cos( ( ( le_real_t * ) er_head )[0] );
     
-    /* inital points coordinates */
-    ( ( le_real_t * ) er_head )[0] = 0.0;
-    ( ( le_real_t * ) er_head )[1] = 0.0;
-    ( ( le_real_t * ) er_head )[2] = 0.0;
-    
     le_size_t span = le_address_get_span(&er_cell->ce_addr);;
     le_size_t two_span = 1 << span;
     
     le_byte_t * raster = calloc( two_span * two_span * two_span, sizeof(le_byte_t));
     if ( raster == NULL ) {
+        return 0;
+    }
+    
+    le_size_t * r_red = calloc( two_span * two_span * two_span, sizeof(le_size_t));
+    if ( r_red == NULL ) {
+        return 0;
+    }
+    
+    le_size_t * r_green = calloc( two_span * two_span * two_span, sizeof(le_size_t));
+    if ( r_green == NULL ) {
+        return 0;
+    }
+    
+    le_size_t * r_blue = calloc( two_span * two_span * two_span, sizeof(le_size_t));
+    if ( r_blue == NULL ) {
         return 0;
     }
     
@@ -239,15 +249,12 @@ le_size_t er_cell_set_data( er_cell_t * const er_cell )
         2 * LE_ADDRESS_RAN_A / denom,
         1024 * LE_ADDRESS_RAN_H / denom};
     
-    //printf("voxel size = (%lf; %lf; %lf)\n", size[0], size[1], size[2]);
-    // printf("corner = (%lf; %lf; %lf)\n", er_corner[0], er_corner[1], er_corner[2]);
-    
     le_size_t x = 0;
     le_size_t y = 0;
     le_size_t z = 0;
     
     /* parsing socket array */
-    while ( ( ( er_head += LE_ARRAY_UF3 ) - er_base ) < er_size ) {
+    while ( ( er_head - er_base ) < er_size ) {
         
         x = floor((( ( le_real_t * ) er_head )[0] - er_corner[0]) * two_span / size[0]);
         y = floor((( ( le_real_t * ) er_head )[1] - er_corner[1]) * two_span / size[1]);
@@ -258,83 +265,134 @@ le_size_t er_cell_set_data( er_cell_t * const er_cell )
             printf("voxel index = %d\n\n", (((x * two_span) + y ) * two_span) + z);
         } else {
             raster[(((x * two_span) + y ) * two_span) + z] = 1;
+            r_red[(((x * two_span) + y ) * two_span) + z] = (er_head + LE_ARRAY_UF3_POSE)[0];
+            r_green[(((x * two_span) + y ) * two_span) + z] = (er_head + LE_ARRAY_UF3_POSE)[1];
+            r_blue[(((x * two_span) + y ) * two_span) + z] = (er_head + LE_ARRAY_UF3_POSE)[2];
         }
         
+        er_head += LE_ARRAY_UF3;
         er_cell->ce_prim_cnt++;
-        
-        //printf("index = %d; ", (((x * two_span) + y ) * two_span) + z);
-        //printf("position = (%d; %d; %d)", x, y, z);
-        //printf(" == (%lf; %lf; %lf)\n", ( ( le_real_t * ) er_head )[0], ( ( le_real_t * ) er_head )[1], ( ( le_real_t * ) er_head )[2]);
     }
     
     le_real_t edge[3] = {0.0, 0.0, 0.0};
-    le_size_t color[3] = {255, 0, 0};
+    le_size_t color[3] = {0, 0, 0};
     le_real_t normal[3] = {0.0, 0.0, 1.0};
     
-    er_cell->ce_vertex_pt = calloc(3 * er_cell->ce_prim_cnt, sizeof(le_real_t));
+    er_cell->ce_vertex_pt = calloc(4 * 2 * 3 * er_cell->ce_prim_cnt, sizeof(le_real_t));
     if (er_cell->ce_vertex_pt == NULL) {
         return 0;
     }
     
-    for(le_size_t i = 0; i < two_span * two_span * two_span; i++){
-        if (raster[i] == 1) {
-            
-            edge[0] = i / (two_span * two_span);
-            edge[1] = (i / two_span) % two_span;
-            edge[2] = i % two_span;
-            
-            printf("index = %d\n", i);
-            printf("position = (%.0f; %.0f; %.0f)\n", edge[0], edge[1], edge[2]);
-            
-            edge[0] = er_corner[0] + (edge[0] * size[0] / two_span);
-            edge[1] = er_corner[1] + (edge[1] * size[1] / two_span);
-            edge[2] = er_corner[2] + (edge[2] * size[2] / two_span);
-            
-            printf("position = (%lf; %lf; %lf)\n", edge[0], edge[1], edge[2]);
-            
-            /* coordinates conversion - points */
-            edge[2] += LE_ADDRESS_WGS_A;
-            
-            /* coordinates conversion - points */
-            er_opta = edge[0];
-            er_optb = edge[1];
-            
-            /* coordinates conversion - points */
-            edge[1] = edge[2] * sin( er_optb ) - er_cell->ce_edge[1];
-            edge[2] = edge[2] * cos( er_optb );
-            edge[0] = edge[2] * sin( er_opta ) - er_cell->ce_edge[0];
-            edge[2] = edge[2] * cos( er_opta ) - er_cell->ce_edge[2];
-            
-            printf("position = (%lf; %lf; %lf)\n", edge[0], edge[1], edge[2]);
-            er_cell->ce_vertex_pt[i * 3] = edge[0];
-            er_cell->ce_vertex_pt[i * 3 + 1] = edge[1];
-            er_cell->ce_vertex_pt[i * 3 + 2] = edge[2];
-        }
-    }
-    
-    
-    for(le_size_t d = 0; d < 3; d++){
-        le_size_t prev_raster = 2;
-        le_size_t curr_raster = 2;
-        for(le_size_t i = 0; i < two_span; i++){
-            curr_raster = raster[i];
-            if (raster[i] == 1) {
-            }
-            prev_raster = curr_raster;
-        }
-    }
-    
-    er_cell->ce_color_pt = calloc(3, sizeof(le_size_t));
+    er_cell->ce_color_pt = calloc(4 * 2 * 3 * er_cell->ce_prim_cnt, sizeof(le_size_t));
     if (er_cell->ce_color_pt == NULL) {
         return 0;
     }
     
-    er_cell->ce_normal_pt = calloc(3, sizeof(le_real_t));
+    er_cell->ce_normal_pt = calloc(4 * 2 * 3 * er_cell->ce_prim_cnt, sizeof(le_real_t));
     if (er_cell->ce_normal_pt == NULL) {
         return 0;
     }
     
+    le_size_t s = 0;
+    
+    /*for(le_size_t i = 0; i < two_span * two_span * two_span; i++){
+     if (raster[i] == 1) {
+     
+     edge[0] = i / (two_span * two_span);
+     edge[1] = (i / two_span) % two_span;
+     edge[2] = i % two_span;
+     
+     //printf("index = %d\n", i);
+     //printf("position = (%.0f; %.0f; %.0f)\n", edge[0], edge[1], edge[2]);
+     
+     edge[0] = er_corner[0] + (edge[0] * size[0] / two_span);
+     edge[1] = er_corner[1] + (edge[1] * size[1] / two_span);
+     edge[2] = er_corner[2] + (edge[2] * size[2] / two_span);
+     
+     //printf("position = (%lf; %lf; %lf)\n", edge[0], edge[1], edge[2]);
+     
+     // coordinates conversion - points
+     edge[2] += LE_ADDRESS_WGS_A;
+     
+     // coordinates conversion - points
+     er_opta = edge[0];
+     er_optb = edge[1];
+     
+     // coordinates conversion - points
+     edge[1] = edge[2] * sin( er_optb ) - er_cell->ce_edge[1];
+     edge[2] = edge[2] * cos( er_optb );
+     edge[0] = edge[2] * sin( er_opta ) - er_cell->ce_edge[0];
+     edge[2] = edge[2] * cos( er_opta ) - er_cell->ce_edge[2];
+     
+     //printf("position = (%lf; %lf; %lf)\n", edge[0], edge[1], edge[2]);
+     er_cell->ce_vertex_pt[s * 3] = edge[0];
+     er_cell->ce_vertex_pt[s * 3 + 1] = edge[1];
+     er_cell->ce_vertex_pt[s * 3 + 2] = edge[2];
+     
+     er_cell->ce_color_pt[s * 3] = r_red[i];
+     er_cell->ce_color_pt[s * 3 + 1] = r_green[i];
+     er_cell->ce_color_pt[s * 3 + 2] = r_blue[i];
+     
+     s++;
+     }
+     }*/
+    
+    le_size_t i = 0;
+    for (x = 0; x < two_span; x++) {
+        for (y = 0; y < two_span; y++) {
+            le_size_t prev_raster = 0;
+            le_size_t curr_raster;
+            for (z = 0; z < two_span; z++) {
+                curr_raster = raster[i];
+                if (prev_raster != curr_raster || ( z + 1 == two_span && curr_raster == 1)) {
+                    //printf("index = %d\n", i);
+                    //printf("prev_raster = %d\n", prev_raster);
+                    //printf("curr_raster = %d\n\n", curr_raster);
+                    //printf("position = (%.0f; %.0f; %.0f)\n", edge[0], edge[1], edge[2]);
+                    
+                    edge[0] = er_corner[0] + (x * size[0] / two_span);
+                    edge[1] = er_corner[1] + (y * size[1] / two_span);
+                    edge[2] = er_corner[2] + (z * size[2] / two_span);
+                    
+                    //printf("position = (%lf; %lf; %lf)\n", edge[0], edge[1], edge[2]);
+                    
+                    // coordinates conversion - points
+                    edge[2] += LE_ADDRESS_WGS_A;
+                    
+                    // coordinates conversion - points
+                    er_opta = edge[0];
+                    er_optb = edge[1];
+                    
+                    // coordinates conversion - points
+                    edge[1] = edge[2] * sin( er_optb ) - er_cell->ce_edge[1];
+                    edge[2] = edge[2] * cos( er_optb );
+                    edge[0] = edge[2] * sin( er_opta ) - er_cell->ce_edge[0];
+                    edge[2] = edge[2] * cos( er_opta ) - er_cell->ce_edge[2];
+                    
+                    //printf("position = (%lf; %lf; %lf)\n", edge[0], edge[1], edge[2]);
+                    er_cell->ce_vertex_pt[s * 3] = edge[0];
+                    er_cell->ce_vertex_pt[s * 3 + 1] = edge[1];
+                    er_cell->ce_vertex_pt[s * 3 + 2] = edge[2];
+                    
+                    er_cell->ce_color_pt[s * 3] = r_red[i];
+                    er_cell->ce_color_pt[s * 3 + 1] = r_green[i];
+                    er_cell->ce_color_pt[s * 3 + 2] = r_blue[i];
+                    
+                    s++;
+                }
+                prev_raster = curr_raster;
+                
+                i++;
+            }
+        }
+    }
+    //printf("s = %d\n", s);
+    er_cell->ce_prim_cnt = s - 1;
+    
     free( raster );
+    free( r_red );
+    free( r_green );
+    free( r_blue );
     
     /* return cell size */
     return( er_size );
@@ -342,15 +400,15 @@ le_size_t er_cell_set_data( er_cell_t * const er_cell )
 }
 
 le_void_t er_cell_display( er_cell_t * const er_cell ){
-    glBegin(GL_QUADS);
-    glColor3i(255, 0, 0);
-    for(le_size_t i = 0; i < 3 * er_cell->ce_prim_cnt; i+=3){
-        glVertex3f(er_cell->ce_vertex_pt[i], er_cell->ce_vertex_pt[i + 1], er_cell->ce_vertex_pt[i + 2]);
-    }
-    glEnd();
+    /*glBegin(GL_POINTS);
+     for(le_size_t i = 0; i < 3 * er_cell->ce_prim_cnt; i+=3){
+     glColor3f(er_cell->ce_color_pt[i],er_cell->ce_color_pt[i + 1], er_cell->ce_color_pt[i + 2]);
+     glVertex3f(er_cell->ce_vertex_pt[i], er_cell->ce_vertex_pt[i + 1], er_cell->ce_vertex_pt[i + 2]);
+     }
+     glEnd();*/
     
-    //glVertexPointer(3, GL_DOUBLE, 0, er_cell->ce_vertex_pt);
-    //glColorPointer (3, GL_UNSIGNED_BYTE, 0, er_cell->ce_color_pt);
-    //glNormalPointer(GL_DOUBLE, 0, er_cell->ce_normal_pt);
-    //glDrawArrays(GL_POINTS, 0, er_cell->ce_prim_cnt);
+    glVertexPointer(3, GL_DOUBLE, 0, er_cell->ce_vertex_pt);
+    glColorPointer (3, GL_UNSIGNED_BYTE, 0, er_cell->ce_color_pt);
+    glNormalPointer(GL_DOUBLE, 0, er_cell->ce_normal_pt);
+    glDrawArrays(GL_POINTS, 0, er_cell->ce_prim_cnt);
 }
