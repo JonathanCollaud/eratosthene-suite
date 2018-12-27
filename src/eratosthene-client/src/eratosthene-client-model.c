@@ -452,8 +452,6 @@ le_void_t er_model_set_sync_tail( er_model_t * const er_model )
 
 le_void_t er_model_display_cell( er_model_t const * const er_model, er_view_t const * const er_view )
 {
-    er_cell_t * md_cell = er_model->md_cell;
-
     /* view position variables */
     le_real_t er_lon = er_view_get_lon( er_view );
     le_real_t er_lat = er_view_get_lat( er_view );
@@ -478,15 +476,12 @@ le_void_t er_model_display_cell( er_model_t const * const er_model, er_view_t co
     
     /* parsing d-cells array */
     for ( le_size_t er_parse = 0; er_parse < er_model->md_size; er_parse ++ ) {
-
-        //printf("\ner_cell_get_flag %d\n", er_cell_get_flag( md_cell + er_parse, ER_CELL_DIS ));
-        //printf("ER_CELL_DIS %d\n", ER_CELL_DIS);
         
         /* check d-cell flag */
-        if ( er_cell_get_flag( md_cell + er_parse, ER_CELL_DIS ) == ER_CELL_DIS ) {
+        if ( er_cell_get_flag( er_model->md_cell + er_parse, ER_CELL_DIS ) == ER_CELL_DIS ) {
 
             /* retrieve d-cell edge array */
-            er_edge = er_cell_get_edge( md_cell + er_parse );
+            er_edge = er_cell_get_edge( er_model->md_cell + er_parse );
 
             /* d-cell matrix */
             glPushMatrix();
@@ -506,30 +501,7 @@ le_void_t er_model_display_cell( er_model_t const * const er_model, er_view_t co
             glRotated( - er_lon, 0.0, 1.0, 0.0 );
             
             /* display graphical primitives */
-            er_cell_display(md_cell + er_parse);
-            
-            /*
-            le_real_t denom = pow(2, er_cell_get_size(md_cell + er_parse) + er_view_get_span(er_view));
-
-            le_real_t size[3] = {
-                LE_ADDRESS_WGS_A * LE_ADDRESS_RAN_L / denom,
-                1024 * LE_ADDRESS_RAN_H / denom,
-                2 * LE_ADDRESS_WGS_A * LE_ADDRESS_RAN_A / denom
-            };
-
-            le_byte_t * curr_point = (le_byte_t *) er_cell_get_pose(md_cell + er_parse);
-
-            /*for (le_size_t v = 0; v < er_cell_get_record(md_cell + er_parse); v++) {
-
-                er_voxel_t voxel = er_voxel_create();
-                er_voxel_set_edge(&voxel, (le_real_t *) curr_point);
-                er_voxel_set_color(&voxel, (le_data_t *) curr_point + LE_ARRAY_UF3_POSE);
-                er_voxel_set_size(&voxel, size);
-
-                er_voxel_display_cube(&voxel, er_lon, er_lat);
-
-                curr_point += LE_ARRAY_UF3;
-            }*/
+            er_cell_display(er_model->md_cell + er_parse);
 
             /* d-cell matrix */
             glPopMatrix();

@@ -375,7 +375,7 @@ extern "C" {
     
     le_size_t er_cell_set_data( er_cell_t * const er_cell );
     
-    le_void_t er_cell_reduce_raster(er_cell_t * const er_cell,
+    le_void_t er_cell_gen_prim(er_cell_t * const er_cell,
                                     const le_byte_t * const raster,
                                     const le_size_t * const r_red,
                                     const le_size_t * const r_green,
@@ -383,6 +383,26 @@ extern "C" {
                                     const le_size_t axis);
     
     le_void_t er_cell_para2cart(er_cell_t * const er_cell, le_real_t * edge );
+    
+    le_size_t er_cell_get_raster_index( const le_size_t * const e, const le_size_t * const a, le_size_t const two_span);
+    
+    le_void_t er_cell_vertex_convolution( const le_byte_t * const raster,
+                                         const le_size_t * const r_red,
+                                         const le_size_t * const r_green,
+                                         const le_size_t * const r_blue,
+                                         const le_size_t * const e,
+                                         const le_size_t * const a,
+                                         le_size_t const index,
+                                         le_size_t const v,
+                                         le_size_t const two_span,
+                                         le_size_t * color,
+                                         le_real_t * normal );
+    
+    le_void_t er_cell_set_primitive( er_cell_t * const er_cell,
+                                    const le_size_t index,
+                                    const le_real_t * const edge,
+                                    const le_size_t * const color,
+                                    const le_real_t * const normal );
     
     le_void_t er_cell_display( er_cell_t * const er_cell );
     

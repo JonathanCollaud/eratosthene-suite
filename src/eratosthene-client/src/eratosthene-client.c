@@ -273,6 +273,21 @@ le_void_t er_client_loops(  er_client_t * const er_client, SDL_Window * const er
     /* opengl features configuration */
     glEnable( GL_DEPTH_TEST );
     glEnable( GL_BLEND      );
+    
+    /* enable culling */
+    glEnable( GL_CULL_FACE );
+    
+    /* face culling */
+    glCullFace( GL_BACK );
+    
+    /* enable light */
+    glEnable( GL_LIGHTING );
+    glEnable( GL_LIGHT0 );
+    
+    glEnable( GL_COLOR_MATERIAL );
+    
+    /* normal vector normalization */
+    glEnable(GL_NORMALIZE);
 
     /* opengl fog configuration */
     glFogf ( GL_FOG_MODE   , GL_LINEAR );
@@ -285,6 +300,7 @@ le_void_t er_client_loops(  er_client_t * const er_client, SDL_Window * const er
     /* enable vertex and color arrays */
     glEnableClientState( GL_VERTEX_ARRAY );
     glEnableClientState( GL_COLOR_ARRAY  );
+    glEnableClientState( GL_NORMAL_ARRAY );
 
     /* opengl point size */
     glPointSize( 2.0 );
