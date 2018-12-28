@@ -424,8 +424,6 @@ le_void_t er_cell_vertex_convolution ( const le_byte_t * const raster,
         if (vertex >= 2) v_e[1]++;
     }
     
-//    printf("Index %lld, vertex %d:\n", index, vertex);
-    
     le_size_t v_cnt = 0;
     for (le_size_t v = 0 ; v < nb_v; v++) {
         
@@ -437,40 +435,91 @@ le_void_t er_cell_vertex_convolution ( const le_byte_t * const raster,
         //vertex edges are in 0 to two_span, hence kernel can reach -1 to two_span.
         //0 keeps its value, two_span inherits two_span-1 value, every other are averaged
         
-        if (k_v[0] >= 0 && k_v[0] < two_span && k_v[1] >= 0 && k_v[1] < two_span && k_v[2] >= 0 && k_v[2] < two_span) {
+        if (k_v[0] >= 0 && k_v[0] < two_span &&
+            k_v[1] >= 0 && k_v[1] < two_span &&
+            k_v[2] >= 0 && k_v[2] < two_span) {
             le_size_t v_index = er_cell_get_raster_index(k_v, a, two_span);
-            
-//            printf("\tv_index = %d\n", v_index);
         
             if (raster[v_index]) {
                 color[0] += r_red[v_index];
                 color[1] += r_green[v_index];
                 color[2] += r_blue[v_index];
                 
-                if (v >= 4) {
-                    normal[1]++;
-                    normal[2]++;
-                }
-                if (v % 4 >= 2) {
-                    normal[2]++;
-                    normal[0]++;
-                }
-                if (v % 2 == 1) {
-                    normal[0]++;
-                    normal[1]++;
-                }
+                if (v >= 4) normal[a[0]]++;
+                else normal[a[0]]--;
+                if (v % 4 >= 2) normal[a[1]]++;
+                else normal[a[1]]--;
+                if (v % 2 == 1) normal[a[2]]++;
+                else normal[a[2]]--;
                 
                 v_cnt++;
             }
-        }
+        } /*else if ((k_v[0] < 0 || k_v[0] >= two_span) &&
+                   k_v[1] >= 0 && k_v[1] < two_span &&
+                   k_v[2] >= 0 && k_v[2] < two_span) {
+            k_v[0] = k_v[0] == two_span ? two_span - 1 : 0;
+            le_size_t v_index = er_cell_get_raster_index(k_v, a, two_span);
+           
+            if (raster[v_index]) {
+                color[0] += r_red[v_index];
+                color[1] += r_green[v_index];
+                color[2] += r_blue[v_index];
+                
+                //if (v >= 4) normal[a[0]]++;
+                //else normal[a[0]]--;
+                if (v % 4 >= 2) normal[a[1]]++;
+                else normal[a[1]]--;
+                if (v % 2 == 1) normal[a[2]]++;
+                else normal[a[2]]--;
+                
+                v_cnt++;
+            }
+        } else if (k_v[0] >= 0 && k_v[0] < two_span &&
+                   (k_v[1] < 0 || k_v[1] >= two_span) &&
+                   k_v[2] >= 0 && k_v[2] < two_span) {
+            k_v[1] = k_v[1] == two_span ? two_span - 1 : 0;
+            le_size_t v_index = er_cell_get_raster_index(k_v, a, two_span);
+            
+            if (raster[v_index]) {
+                color[0] += r_red[v_index];
+                color[1] += r_green[v_index];
+                color[2] += r_blue[v_index];
+                
+                if (v >= 4) normal[a[0]]++;
+                else normal[a[0]]--;
+                //if (v % 4 >= 2) normal[a[1]]++;
+                //else normal[a[1]]--;
+                if (v % 2 == 1) normal[a[2]]++;
+                else normal[a[2]]--;
+                
+                v_cnt++;
+            }
+        } else if (k_v[0] >= 0 && k_v[0] < two_span &&
+                   k_v[1] >= 0 && k_v[1] < two_span &&
+                   (k_v[2] < 0 || k_v[2] >= two_span)){
+            k_v[2] = k_v[2] == two_span ? two_span - 1 : 0;
+            le_size_t v_index = er_cell_get_raster_index(k_v, a, two_span);
+            
+            if (raster[v_index]) {
+                color[0] += r_red[v_index];
+                color[1] += r_green[v_index];
+                color[2] += r_blue[v_index];
+                
+                if (v >= 4) normal[a[0]]++;
+                else normal[a[0]]--;
+                if (v % 4 >= 2) normal[a[1]]++;
+                else normal[a[1]]--;
+                //if (v % 2 == 1) normal[a[2]]++;
+                //else normal[a[2]]--;
+                
+                v_cnt++;
+            }
+        }*/
     }
-    
-//    printf("Convolution done\n\n");
 
     if (v_cnt > 0) {
         for (le_size_t i = 0; i < 3; i++) {
             color[i] /= v_cnt;
-            normal[i] /= v_cnt * 2;
         }
     }
 }
