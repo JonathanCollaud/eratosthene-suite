@@ -254,9 +254,9 @@ le_size_t er_cell_set_data( er_cell_t * const er_cell )
         er_head += LE_ARRAY_UF3;
     }
     
-    if (!er_cell->ce_vertex_pt) free( er_cell->ce_vertex_pt );
-    if (!er_cell->ce_color_pt) free( er_cell->ce_color_pt );
-    if (!er_cell->ce_normal_pt) free( er_cell->ce_normal_pt );
+    free( er_cell->ce_vertex_pt );
+    free( er_cell->ce_color_pt );
+    free( er_cell->ce_normal_pt );
     
     er_cell->ce_vertex_pt = calloc(4 * 3 * 3 * 2 * er_size, sizeof(le_real_t));
     if (!er_cell->ce_vertex_pt) return 0;
@@ -273,10 +273,10 @@ le_size_t er_cell_set_data( er_cell_t * const er_cell )
         er_cell_gen_prim(er_cell, raster, r_red, r_green, r_blue, axis);
     }
     
-    free( raster );
-    free( r_red );
-    free( r_green );
-    free( r_blue );
+    free( raster ); raster = NULL;
+    free( r_red ); r_red = NULL;
+    free( r_green ); r_green = NULL;
+    free( r_blue ); r_blue = NULL;
     
     er_cell->ce_color_pt = realloc(er_cell->ce_color_pt, er_cell->ce_prim_cnt * 3 * sizeof(le_size_t));
     if (!er_cell->ce_color_pt) return 0;
@@ -303,7 +303,6 @@ le_void_t er_cell_gen_prim(er_cell_t * const er_cell,
     
     le_size_t color[3] = {0, 0, 0};
     le_real_t normal[3] = {0.0, 0.0, 0.0};
-    le_real_t normal1[3] = {1.0, 1.0, 1.0};
     
     le_size_t span = le_address_get_span(&er_cell->ce_addr);
     le_size_t two_span = 1 << span;
@@ -328,69 +327,46 @@ le_void_t er_cell_gen_prim(er_cell_t * const er_cell,
         for (e[1] = 0; e[1] < two_span; e[1]++) {
             prev_raster = 0;
             
-            for (e[2] = 0; e[2] < two_span; e[2]++) {
+            for (e[2] = 0; e[2] <= two_span; e[2]++) {
                 
-                curr_i = er_cell_get_raster_index(e, a, two_span);
-                curr_raster = raster[curr_i];
+                if (e[2] == two_span) {
+                    curr_raster = 0;
+                } else {
+                    curr_i = er_cell_get_raster_index(e, a, two_span);
+                    curr_raster = raster[curr_i];
+                }
                 
                 if (prev_raster != curr_raster) {
                     corner[a[0]] = er_pose[a[0]] + (e[0] * size[a[0]] / two_span);
                     corner[a[1]] = er_pose[a[1]] + (e[1] * size[a[1]] / two_span);
                     corner[a[2]] = er_pose[a[2]] + (e[2] * size[a[2]] / two_span);
                     
-                    /* enter in shape if current raster is one, exit otherwise */
-                    le_size_t inside_index = curr_raster == 1? curr_i : prev_i;
-                    
                     for (le_size_t v = 0; v < 4; v++) {
                         edge[0] = corner[0];
                         edge[1] = corner[1];
                         edge[2] = corner[2];
                         
-                        if (curr_raster == 1){
-                            if (v >= 2) edge[a[0]] += size[a[0]] / two_span;
-                            if (v == 1 || v == 2) edge[a[1]] += size[a[1]] / two_span;
-                        } else {
-                            if (v == 1 || v == 2) edge[a[0]] += size[a[0]] / two_span;
-                            if (v >= 2) edge[a[1]] += size[a[1]] / two_span;
+                        if (v == 1 || v == 2) {
+                            if (curr_raster) edge[a[1]] += size[a[1]] / two_span;
+                            else edge[a[0]] += size[a[0]] / two_span;
                         }
+                        if (v >= 2) {
+                            if (curr_raster) edge[a[0]] += size[a[0]] / two_span;
+                            else edge[a[1]] += size[a[1]] / two_span;
+                        }
+                        
+                        er_cell_vertex_convolution(raster, r_red, r_green, r_blue,
+                                                   e, a, curr_i, v, two_span, color, normal);
                         
                         er_cell_para2cart(er_cell, edge);
                         
-                        er_cell_vertex_convolution(raster, r_red, r_green, r_blue,
-                                                   e, a, inside_index, v, two_span, color, normal);
-                        
-                        er_cell_set_primitive(er_cell, (prim_cnt + v), edge, color, normal1);
+                        er_cell_set_primitive(er_cell, prim_cnt + v, edge, color, normal);
                     }
                     
                     prim_cnt += 4;
                 }
                 prev_i = curr_i;
                 prev_raster = curr_raster;
-            }
-            
-            // e[2] == two_span, cell's border case
-            if (prev_raster == 1) {
-                corner[a[0]] = er_pose[a[0]] + (e[0] * size[a[0]] / two_span);
-                corner[a[1]] = er_pose[a[1]] + (e[1] * size[a[1]] / two_span);
-                corner[a[2]] = er_pose[a[2]] + (e[2] * size[a[2]] / two_span);
-                
-                for (le_size_t v = 0; v < 4; v++) {
-                    edge[0] = corner[0];
-                    edge[1] = corner[1];
-                    edge[2] = corner[2];
-                    
-                    if (v == 1 || v == 2) edge[a[0]] += size[a[0]] / two_span;
-                    if (v >= 2) edge[a[1]] += size[a[1]] / two_span;
-                    
-                    er_cell_para2cart(er_cell, edge);
-                    
-                    //er_cell_vertex_convolution(raster, r_red, r_green, r_blue,
-                    //                           e, a, prev_i, v, two_span, color, normal);
-                    
-                    er_cell_set_primitive(er_cell, (prim_cnt + v), edge, color, normal1);
-                }
-                
-                prim_cnt += 4;
             }
         }
     }
@@ -423,66 +399,80 @@ le_void_t er_cell_vertex_convolution ( const le_byte_t * const raster,
                                       const le_size_t * const e,
                                       const le_size_t * const a,
                                       le_size_t const index,
-                                      le_size_t const v,
+                                      le_size_t const vertex,
                                       le_size_t const two_span,
                                       le_size_t * color,
                                       le_real_t * normal ){
-    
-    le_size_t r1 = 0;
-    le_size_t r2 = 0;
-    le_size_t r3 = 0;
-    
-    /*if (curr_raster == 1){
-        o1 = (v == 1 || v == 2) ? 1 : -1;
-        o2 = (v >= 2) ? 1 : -1;
-    } else {
-        o1 = (v >= 2) ? 1 : -1;
-        o2 = (v == 1 || v == 2) ? 1 : -1;
-    }*/
-    
-    le_size_t o1 = (v == 1 || v == 2) ? 1 : -1;
-    le_size_t o2 = (v >= 2) ? 1 : -1;
-    
-    le_size_t nb_v = 1;
-    for (le_size_t n = 0; n <= 2; n++) {
-        /*printf("e1 = %d; e2 = %d; o1 = %d; o2 = %d; i = %d; (%d, %d, %d); (", e[0], e[1], o1, o2, index,
-               index + o1 * two_span * two_span,
-               index + (o1 * two_span + o2) * two_span,
-               index + o2 * two_span);*/
-        
-        if ((e[0] == 0 && o1 == -1) || (e[0] == two_span - 1 && o1 == 1)) {
-            r1 = 0;
-        } else {
-            r1 = raster[index + o1 * two_span * two_span];
-            nb_v++;
-        }
-        
-        //printf("%d, ", r1);
-        
-        if ((e[0] == 0 && o1 == -1) || (e[0] == two_span - 1 && o1 == 1) || (e[1] == 0 && o2 == -1) || (e[1] == two_span - 1 && o2 == 1)) {
-            r2 = 0;
-        } else {
-            r2 = raster[index + (o1 * two_span + o2) * two_span];
-            nb_v++;
-        }
-        
-        //printf("%d, ", r2);
-        
-        if ((e[1] == 0 && o2 == -1) || (e[1] == two_span - 1 && o2 == 1)){
-            r3 = 0;
-        } else {
-            r3 = raster[index + o2 * two_span];
-            nb_v++;
-        }
-        
-        //printf("%d)\n", r3);
-        
-        normal[n] = (1 + r1 + r2 + r3) / nb_v;
+    /* Color and normal initialization */
+    for (le_size_t i = 0; i < 3; i++) {
+        color[i] = 0;
+        normal[i] = 0.0;
     }
     
-    color[0] = r_red[index];
-    color[1] = r_green[index];
-    color[2] = r_blue[index];
+    le_size_t nb_v = 8;
+    
+    // v_e[i] are in range [0, two_span]
+    le_size_t v_e[3] = {e[0], e[1], e[2]};
+    
+    /* If the current raster is 1, then we enter in the voxel (clockwise rotation).
+     If it's 0 (exit the voxel) or we reach the voxel's end, then counter-clockwise rotate */
+    if (raster[index] == 1){
+        if (vertex >= 2) v_e[0]++;
+        if (vertex == 1 || vertex == 2) v_e[1]++;
+    } else {
+        if (vertex == 1 || vertex == 2) v_e[0]++;
+        if (vertex >= 2) v_e[1]++;
+    }
+    
+//    printf("Index %lld, vertex %d:\n", index, vertex);
+    
+    le_size_t v_cnt = 0;
+    for (le_size_t v = 0 ; v < nb_v; v++) {
+        
+        le_size_t k_v[3] = {v_e[0], v_e[1], v_e[2]};
+        
+        if (v >= 4) k_v[0]--;
+        if (v % 4 >= 2) k_v[1]--;
+        if (v % 2 == 1) k_v[2]--;
+        //vertex edges are in 0 to two_span, hence kernel can reach -1 to two_span.
+        //0 keeps its value, two_span inherits two_span-1 value, every other are averaged
+        
+        if (k_v[0] >= 0 && k_v[0] < two_span && k_v[1] >= 0 && k_v[1] < two_span && k_v[2] >= 0 && k_v[2] < two_span) {
+            le_size_t v_index = er_cell_get_raster_index(k_v, a, two_span);
+            
+//            printf("\tv_index = %d\n", v_index);
+        
+            if (raster[v_index]) {
+                color[0] += r_red[v_index];
+                color[1] += r_green[v_index];
+                color[2] += r_blue[v_index];
+                
+                if (v >= 4) {
+                    normal[1]++;
+                    normal[2]++;
+                }
+                if (v % 4 >= 2) {
+                    normal[2]++;
+                    normal[0]++;
+                }
+                if (v % 2 == 1) {
+                    normal[0]++;
+                    normal[1]++;
+                }
+                
+                v_cnt++;
+            }
+        }
+    }
+    
+//    printf("Convolution done\n\n");
+
+    if (v_cnt > 0) {
+        for (le_size_t i = 0; i < 3; i++) {
+            color[i] /= v_cnt;
+            normal[i] /= v_cnt * 2;
+        }
+    }
 }
 
 le_void_t er_cell_set_primitive( er_cell_t * const er_cell,
@@ -490,10 +480,10 @@ le_void_t er_cell_set_primitive( er_cell_t * const er_cell,
                                 const le_real_t * const edge,
                                 const le_size_t * const color,
                                 const le_real_t * const normal ){
-    for (le_size_t j = 0; j <= 2; j++) {
-        er_cell->ce_vertex_pt[index * 3 + j] = edge[j];
-        er_cell->ce_color_pt[index * 3 + j] = color[j];
-        er_cell->ce_normal_pt[index * 3 + j] = normal[j];
+    for (le_size_t i = 0; i <= 2; i++) {
+        er_cell->ce_vertex_pt[index * 3 + i] = edge[i];
+        er_cell->ce_color_pt[index * 3 + i] = color[i];
+        er_cell->ce_normal_pt[index * 3 + i] = normal[i];
     }
 }
 
