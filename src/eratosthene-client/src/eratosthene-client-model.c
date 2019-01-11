@@ -513,10 +513,11 @@ le_void_t er_model_display_cell( er_model_t const * const er_model, er_view_t co
                 1024 * LE_ADDRESS_RAN_H / denom};
             
             le_byte_t * curr_point = (le_byte_t *) er_cell_get_pose(md_cell + er_parse);
-
+            
+            er_voxel_t voxel = er_voxel_create();
             for (le_size_t v = 0; v < er_cell_get_record(md_cell + er_parse); v++) {
 
-                er_voxel_t voxel = er_voxel_create();
+                
                 er_voxel_set_edge(&voxel, (le_real_t *) curr_point);
                 er_voxel_set_color(&voxel, (le_data_t *) curr_point + LE_ARRAY_UF3_POSE);
                 er_voxel_set_size(&voxel, size);
@@ -524,8 +525,10 @@ le_void_t er_model_display_cell( er_model_t const * const er_model, er_view_t co
                 er_voxel_display_cube(&voxel, er_lon, er_lat);
 
                 curr_point += LE_ARRAY_UF3;
+                
             }
- 
+            er_voxel_delete(&voxel);
+            
             /* d-cell matrix */
             glPopMatrix();
         }
