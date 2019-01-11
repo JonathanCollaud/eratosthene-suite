@@ -238,6 +238,9 @@ le_size_t er_cell_set_data( er_cell_t * const er_cell )
     le_size_t y = 0;
     le_size_t z = 0;
     
+    /* initialize index */
+    le_size_t index = 0;
+    
     /* retrive cell position */
     le_real_t er_pose[3];
     le_address_get_pose(& er_cell->ce_addr, er_pose);
@@ -248,10 +251,12 @@ le_size_t er_cell_set_data( er_cell_t * const er_cell )
         y = round((( ( le_real_t * ) er_head )[1] - er_pose[1]) * two_span / size[1]);
         z = round((( ( le_real_t * ) er_head )[2] - er_pose[2]) * two_span / size[2]);
         
-        raster[(((x * two_span) + y ) * two_span) + z] = 1; // pre calcul de l'index
-        r_red[(((x * two_span) + y ) * two_span) + z] = (er_head + LE_ARRAY_UF3_POSE)[0];
-        r_green[(((x * two_span) + y ) * two_span) + z] = (er_head + LE_ARRAY_UF3_POSE)[1];
-        r_blue[(((x * two_span) + y ) * two_span) + z] = (er_head + LE_ARRAY_UF3_POSE)[2];
+        index = (((x * two_span) + y ) * two_span) + z;
+        
+        raster[index] = 1;
+        r_red[index] = (er_head + LE_ARRAY_UF3_POSE)[0];
+        r_green[index] = (er_head + LE_ARRAY_UF3_POSE)[1];
+        r_blue[index] = (er_head + LE_ARRAY_UF3_POSE)[2];
         
         er_head += LE_ARRAY_UF3;
     }
