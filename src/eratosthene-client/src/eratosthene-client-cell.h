@@ -42,374 +42,436 @@
 # ifdef __cplusplus
 extern "C" {
 # endif
-    
-    /*
-     header - internal includes
-     */
-    
+
+/*
+ header - internal includes
+ */
+
 # include "eratosthene-client-common.h"
 # include "eratosthene-client-geodesy.h"
-    
-    /*
-     header - external includes
-     */
-    
-    /*
-     header - preprocessor definitions
-     */
-    
-    /* define pseudo-constructor */
+
+/*
+ header - external includes
+ */
+
+/*
+ header - preprocessor definitions
+ */
+
+/* define pseudo-constructor */
 # define ER_CELL_C   { 0, LE_ADDRESS_C, LE_ARRAY_C, { 0.0 }, 0, NULL, NULL, NULL }
-    
-    /* define flags */
+
+/* define flags */
 # define ER_CELL_SYN ( 0x01 << 0 )
 # define ER_CELL_DIS ( 0x01 << 1 )
-    
-    /*
-     header - preprocessor macros
-     */
-    
-    /*
-     header - type definition
-     */
-    
-    /*
-     header - structures
-     */
-    
-    /*! \struct er_cell_struct
-     *  \brief cell structure
-     *
-     *  This structure holds the definition and data of an equivalence class
-     *  obtained through a query to the remote server.
-     *
-     *  The structure holds a flag value that is used for both model update and
-     *  model display. If its bit corresponding to the display bit is set, it
-     *  indicates the graphical process to draw the cell. If the synchronisation
-     *  bit is set, it indicates that the cell is set in both target and actual
-     *  model.
-     *
-     *  The structure holds an address structure that stores the query address
-     *  of the data contained in the cell. This structure is also used during
-     *  model update to build queries to the remote server.
-     *
-     *  The structure contains also an array structure that holds the actual
-     *  data of the cell. This array is used by the model update process to
-     *  retrieve the data coming from the remote server. It is also used by the
-     *  graphical process to display the cell content.
-     *
-     *  The last field hold by the structure is the cell edge. This vector is
-     *  used to translate the coordinates contained in the cell data array to
-     *  avoid overflow of floating point precision, the entire earth displayed
-     *  at the level of the centimetre being beyond the capacity of the single
-     *  precision used by OpenGL. Practically, this vector contains the first
-     *  point received from the remote server instead of the mathematical edge
-     *  of the cell pointed by the address structure. This vector is used as the
-     *  cell is drawn.
-     *
-     *  \var er_cell_struct::ce_flag
-     *  Cell flag bits
-     *  \var er_cell_struct::ce_addr
-     *  Cell address structure
-     *  \var er_cell_struct::ce_data
-     *  Cell array containing the data
-     *  \var er_cell_struct::ce_edge
-     *  Cell translation vector
-     */
-    
-    typedef struct er_cell_struct {
-        
-        le_byte_t    ce_flag;
-        le_address_t ce_addr;
-        le_array_t   ce_data;
-        le_real_t    ce_edge[6];
-        le_size_t   ce_prim_cnt;
-        le_real_t * ce_vertex_pt;
-        le_real_t * ce_normal_pt;
-        le_data_t * ce_color_pt;
-        
-    } er_cell_t;
-    
-    /*
-     header - function prototypes
-     */
-    
-    /*! \brief constructor/destructor methods
-     *
-     *  This function creates and returns a cell structure. The structure fields
-     *  are initialised using default values.
-     *
-     *  \return Returns the created cell structure
-     */
-    
-    er_cell_t er_cell_create( le_void_t );
-    
-    /*! \brief constructor/destructor methods
-     *
-     *  This function deletes the cell structure provided as parameter. It
-     *  deletes the cell data array and clears the structures fields using
-     *  default values.
-     *
-     *  \param er_cell Cell structure
-     */
-    
-    le_void_t er_cell_delete( er_cell_t * const er_cell );
-    
-    /*! \brief accessor methods
-     *
-     *  This function returns the bits of the cell flag field corresponding to
-     *  the provided bits pattern \b er_state.
-     *
-     *  Practically, the function performs a logical and between the cell flag
-     *  field and the provided bits pattern.
-     *
-     *  \param er_cell  Cell structure
-     *  \param er_state Bits pattern
-     */
-    
-    le_byte_t er_cell_get_flag( er_cell_t const * const er_cell, le_byte_t const er_state );
-    
-    /*! \brief accessor methods
-     *
-     *  This function compares the two provided cell addresses and return the
-     *  _LE_TRUE value if both addresses are strictly identical and _LE_FALSE
-     *  otherwise.
-     *
-     *  \param er_cell Cell structure
-     *  \param er_targ Cell structure
-     *
-     *  \return Returns _LE_TRUE on addresses identity, _LE_FALSE otherwise
-     */
-    
-    le_enum_t er_cell_get_equal( er_cell_t const * const er_cell, er_cell_t const * const er_targ );
-    
-    /*! \brief accessor methods
-     *
-     *  This function compare the address of the provided cell to the address
-     *  provided as parameter. If both are identical, the function returns the
-     *  _LE_TRUE value, _LE_FALSE otherwise.
-     *
-     *  \param er_cell Cell structure
-     *  \param er_addr Address structure
-     *
-     * \return Returns _LE_TRUE on addresses identity, _LE_FALSE otherwise
-     */
-    
-    le_enum_t er_cell_get_drop( er_cell_t const * const er_cell, le_address_t const * const er_addr );
-    
-    /*! \brief accessor methods
-     *
-     *  This function returns the number of points, that is the number of UF3
-     *  records contained in the cell data array.
-     *
-     *  \param er_cell Cell structure
-     *
-     *  \return Cell number of points - UF3 records
-     */
-    
-    le_size_t er_cell_get_record( er_cell_t const * const er_cell );
-    
-    /*! \brief accessor methods
-     *
-     *  This function returns the address size of the cell, that is the number
-     *  of digits of the cell address.
-     *
-     *  \param er_cell Cell structure
-     *
-     *  \return Returns cell address size - number of digit
-     */
-    
-    le_size_t er_cell_get_size( er_cell_t const * const er_cell );
-    
-    /*! \brief accessor methods
-     *
-     *  This function returns the base pointer to the cell points array. One has
-     *  to take into account that the cell data array interlaces the points
-     *  coordinates and colours. A stride value has to be considered to jump
-     *  from points to points.
-     *
-     *  \param er_cell Cell structure
-     *
-     *  \return Cell points coordinates base pointer
-     */
-    
-    le_real_t * er_cell_get_pose( er_cell_t * const er_cell );
-    
-    /*! \brief accessor methods
-     *
-     *  This function returns the base pointer to the cell colour array. One has
-     *  to take into account that colours are interlaced with points coordinates
-     *  in the cell data array. A stride value has to be considered to jump
-     *  from colours to colours.
-     *
-     *  \param er_cell Cell structure
-     *
-     *  \return Cell points colours base pointer
-     */
-    
-    le_data_t * er_cell_get_data( er_cell_t * const er_cell );
-    
-    /*! \brief accessor methods
-     *
-     *  This function returns a pointer to the 3-array holding the coordinates
-     *  of the cell translation vector. The points hold in the cell data array
-     *  are expressed in a frame having this translation vector as origin.
-     *
-     *  \param er_cell Cell structure
-     *
-     *  \return Pointer to the array of cell frame origin
-     */
-    
-    le_real_t * er_cell_get_edge( er_cell_t * const er_cell );
-    
-    /*! \brief accessor methods
-     *
-     *  This function allows to serialise the provided cell address structure
-     *  in the provided array at the specified offset. After serialisation, the
-     *  function returns the next serialisation offset of the array.
-     *
-     *  \param er_cell   Cell structure
-     *  \param er_array  Array structure
-     *  \param er_offset Serialisation offset, in bytes
-     *
-     *  \return Returns the array next serialisation offset
-     */
-    
-    le_size_t er_cell_get_sync( er_cell_t * const er_cell, le_array_t * const er_array, le_size_t const er_offset );
-    
-    /*! \brief accessor methods
-     *
-     *  This function returns the pointer to the socket-array of the provided
-     *  cell.
-     *
-     *  \param  er_cell Cell structure
-     *
-     *  \return Returns a pointer to the cell array
-     */
-    
-    le_array_t * er_cell_get_array( er_cell_t const * const er_cell );
-    
-    /*! mutator methods
-     *
-     *  This function allows to set bits of the flag field of the provided cell
-     *  structure. The provided \b er_state bits pattern is composed with the
-     *  cell flag field using a logical or.
-     *
-     *  \param er_cell  Cell structure
-     *  \param er_state Bits pattern
-     */
-    
-    le_void_t er_cell_set_flag( er_cell_t * const er_cell, le_byte_t const er_state );
-    
-    /*! mutator methods
-     *
-     *  This function allows to clears the bits of the flag field of the cell
-     *  provided as parameter. The logical not of the \b er_state bits pattern
-     *  is composed with the flag field using a logical and.
-     *
-     *  \param er_cell  Cell structure
-     *  \param er_state Bits pattern
-     */
-    
-    le_void_t er_cell_set_zero( er_cell_t * const er_cell, le_byte_t const er_state );
-    
-    /*! mutator methods
-     *
-     *  This function assign the provided address structure to the provided cell
-     *  address by a simple copy.
-     *
-     *  \param er_cell Cell structure
-     *  \param er_addr Address structure
-     */
-    
-    le_void_t er_cell_set_push( er_cell_t * const er_cell, le_address_t const * const er_addr );
-    
-    /*! mutator methods
-     *
-     *  This function allows to un-serialise the address from the provided
-     *  array using the provided offset value. The de-serialised address is
-     *  then affected to the provided cell address. After un-serialisation, the
-     *  function returns the array next un-serialisation offset.
-     *
-     *  \param er_cell   Cell structure
-     *  \param er_array  Array structure
-     *  \param er_offset Serialisation offset
-     *
-     *  \return Returns the array next un-serialisation offset
-     */
-    
-    le_size_t er_cell_set_sync( er_cell_t * const er_cell, le_array_t * const er_array, le_size_t const er_offset );
-    
-    /*! mutator methods
-     *
-     *  This function process the array received from the remote server after
-     *  a query of the provided cell.
-     *
-     *  The cell edge position is computed by considering the array first point.
-     *  It is then converted from the geographic coordinates to Cartesian
-     *  coordinates.
-     *
-     *  The rest of the point contained in the array are then processed. Each
-     *  point is converted, in terms if its coordinates, from geographic to
-     *  Cartesian coordinates, as expected by the display functions.
-     *
-     *  The incoming array is assumed to provided the longitude, in radian, the
-     *  latitude, in radian, and the height above the WGS84 ellipsoid, expressed
-     *  in metres. These values are expected in this order and are mixed during
-     *  conversion to be adapted to the display frame. To summarise, the mix
-     *  of dimension occurs as follows :
-     *
-     *      x_geographic_cartesian -> z_opengl (0->2)
-     *      y_geographic_cartesian -> x_opengl (1->0)
-     *      z_geographic_cartesian -> y_opengl (2->1)
-     *
-     *  This is done to obtain a natural view in the OpenGL frame.
-     *
-     *  The function returns finally the size of the array of the provided cell
-     *  in bytes.
-     *
-     *  \param er_cell Cell structure
-     *
-     *  \return Returns cell array size in bytes
-     */
-    
-    le_size_t er_cell_set_data( er_cell_t * const er_cell );
-    
-    le_void_t er_cell_gen_prim(er_cell_t * const er_cell,
-                               const le_byte_t * const raster,
-                               const le_data_t * const r_red,
-                               const le_data_t * const r_green,
-                               const le_data_t * const r_blue,
-                               const le_size_t axis,
-                               const le_size_t two_span,
-                               const le_real_t * const size);
-    
-    le_void_t er_cell_para2cart(er_cell_t * const er_cell, le_real_t * edge );
-    
-    le_size_t er_cell_get_raster_index( const le_size_t * const e, const le_size_t * const a, le_size_t const two_span);
-    
-    le_void_t er_cell_vertex_convolution( const le_byte_t * const raster,
-                                         const le_data_t * const r_red,
-                                         const le_data_t * const r_green,
-                                         const le_data_t * const r_blue,
-                                         const le_size_t * const v_e,
-                                         const le_size_t * const a,
-                                         le_size_t const two_span,
-                                         le_size_t * const color,
-                                         le_real_t * const normal );
-    
-    le_void_t er_cell_set_primitive( er_cell_t * const er_cell,
-                                    const le_size_t index,
-                                    const le_real_t * const edge,
-                                    const le_size_t * const color,
-                                    const le_real_t * const normal );
-    
-    le_void_t er_cell_display( er_cell_t * const er_cell );
-    
-    /*
-     header - C/C++ compatibility
-     */
-    
+
+/*
+ header - preprocessor macros
+ */
+
+/*
+ header - type definition
+ */
+
+/*
+ header - structures
+ */
+
+/*! \struct er_cell_struct
+ *  \brief cell structure
+ *
+ *  This structure holds the definition and data of an equivalence class
+ *  obtained through a query to the remote server.
+ *
+ *  The structure holds a flag value that is used for both model update and
+ *  model display. If its bit corresponding to the display bit is set, it
+ *  indicates the graphical process to draw the cell. If the synchronisation
+ *  bit is set, it indicates that the cell is set in both target and actual
+ *  model.
+ *
+ *  The structure holds an address structure that stores the query address
+ *  of the data contained in the cell. This structure is also used during
+ *  model update to build queries to the remote server.
+ *
+ *  The structure contains also an array structure that holds the actual
+ *  data of the cell. This array is used by the model update process to
+ *  retrieve the data coming from the remote server. It is also used by the
+ *  graphical process to display the cell content.
+ *
+ *  The last field hold by the structure is the cell edge. This vector is
+ *  used to translate the coordinates contained in the cell data array to
+ *  avoid overflow of floating point precision, the entire earth displayed
+ *  at the level of the centimetre being beyond the capacity of the single
+ *  precision used by OpenGL. Practically, this vector contains the first
+ *  point received from the remote server instead of the mathematical edge
+ *  of the cell pointed by the address structure. This vector is used as the
+ *  cell is drawn.
+ *
+ *  \var er_cell_struct::ce_flag
+ *  Cell flag bits
+ *  \var er_cell_struct::ce_addr
+ *  Cell address structure
+ *  \var er_cell_struct::ce_data
+ *  Cell array containing the data
+ *  \var er_cell_struct::ce_edge
+ *  Cell translation vector
+ */
+
+typedef struct er_cell_struct {
+
+    le_byte_t    ce_flag;
+    le_address_t ce_addr;
+    le_array_t   ce_data;
+    le_real_t    ce_edge[6];
+    le_size_t   ce_prim_cnt;
+    le_real_t * ce_vertex_pt;
+    le_real_t * ce_normal_pt;
+    le_data_t * ce_color_pt;
+
+} er_cell_t;
+
+/*
+ header - function prototypes
+ */
+
+/*! \brief constructor/destructor methods
+ *
+ *  This function creates and returns a cell structure. The structure fields
+ *  are initialised using default values.
+ *
+ *  \return Returns the created cell structure
+ */
+
+er_cell_t er_cell_create( le_void_t );
+
+/*! \brief constructor/destructor methods
+ *
+ *  This function deletes the cell structure provided as parameter. It
+ *  deletes the cell data array and clears the structures fields using
+ *  default values.
+ *
+ *  \param er_cell Cell structure
+ */
+
+le_void_t er_cell_delete( er_cell_t * const er_cell );
+
+/*! \brief accessor methods
+ *
+ *  This function returns the bits of the cell flag field corresponding to
+ *  the provided bits pattern \b er_state.
+ *
+ *  Practically, the function performs a logical and between the cell flag
+ *  field and the provided bits pattern.
+ *
+ *  \param er_cell  Cell structure
+ *  \param er_state Bits pattern
+ */
+
+le_byte_t er_cell_get_flag( er_cell_t const * const er_cell, le_byte_t const er_state );
+
+/*! \brief accessor methods
+ *
+ *  This function compares the two provided cell addresses and return the
+ *  _LE_TRUE value if both addresses are strictly identical and _LE_FALSE
+ *  otherwise.
+ *
+ *  \param er_cell Cell structure
+ *  \param er_targ Cell structure
+ *
+ *  \return Returns _LE_TRUE on addresses identity, _LE_FALSE otherwise
+ */
+
+le_enum_t er_cell_get_equal( er_cell_t const * const er_cell, er_cell_t const * const er_targ );
+
+/*! \brief accessor methods
+ *
+ *  This function compare the address of the provided cell to the address
+ *  provided as parameter. If both are identical, the function returns the
+ *  _LE_TRUE value, _LE_FALSE otherwise.
+ *
+ *  \param er_cell Cell structure
+ *  \param er_addr Address structure
+ *
+ * \return Returns _LE_TRUE on addresses identity, _LE_FALSE otherwise
+ */
+
+le_enum_t er_cell_get_drop( er_cell_t const * const er_cell, le_address_t const * const er_addr );
+
+/*! \brief accessor methods
+ *
+ *  This function returns the number of points, that is the number of UF3
+ *  records contained in the cell data array.
+ *
+ *  \param er_cell Cell structure
+ *
+ *  \return Cell number of points - UF3 records
+ */
+
+le_size_t er_cell_get_record( er_cell_t const * const er_cell );
+
+/*! \brief accessor methods
+ *
+ *  This function returns the address size of the cell, that is the number
+ *  of digits of the cell address.
+ *
+ *  \param er_cell Cell structure
+ *
+ *  \return Returns cell address size - number of digit
+ */
+
+le_size_t er_cell_get_size( er_cell_t const * const er_cell );
+
+/*! \brief accessor methods
+ *
+ *  This function returns the base pointer to the cell points array. One has
+ *  to take into account that the cell data array interlaces the points
+ *  coordinates and colours. A stride value has to be considered to jump
+ *  from points to points.
+ *
+ *  \param er_cell Cell structure
+ *
+ *  \return Cell points coordinates base pointer
+ */
+
+le_real_t * er_cell_get_pose( er_cell_t * const er_cell );
+
+/*! \brief accessor methods
+ *
+ *  This function returns the base pointer to the cell colour array. One has
+ *  to take into account that colours are interlaced with points coordinates
+ *  in the cell data array. A stride value has to be considered to jump
+ *  from colours to colours.
+ *
+ *  \param er_cell Cell structure
+ *
+ *  \return Cell points colours base pointer
+ */
+
+le_data_t * er_cell_get_data( er_cell_t * const er_cell );
+
+/*! \brief accessor methods
+ *
+ *  This function returns a pointer to the 3-array holding the coordinates
+ *  of the cell translation vector. The points hold in the cell data array
+ *  are expressed in a frame having this translation vector as origin.
+ *
+ *  \param er_cell Cell structure
+ *
+ *  \return Pointer to the array of cell frame origin
+ */
+
+le_real_t * er_cell_get_edge( er_cell_t * const er_cell );
+
+/*! \brief accessor methods
+ *
+ *  This function allows to serialise the provided cell address structure
+ *  in the provided array at the specified offset. After serialisation, the
+ *  function returns the next serialisation offset of the array.
+ *
+ *  \param er_cell   Cell structure
+ *  \param er_array  Array structure
+ *  \param er_offset Serialisation offset, in bytes
+ *
+ *  \return Returns the array next serialisation offset
+ */
+
+le_size_t er_cell_get_sync( er_cell_t * const er_cell, le_array_t * const er_array, le_size_t const er_offset );
+
+/*! \brief accessor methods
+ *
+ *  This function returns the pointer to the socket-array of the provided
+ *  cell.
+ *
+ *  \param  er_cell Cell structure
+ *
+ *  \return Returns a pointer to the cell array
+ */
+
+le_array_t * er_cell_get_array( er_cell_t const * const er_cell );
+
+/*! mutator methods
+ *
+ *  This function allows to set bits of the flag field of the provided cell
+ *  structure. The provided \b er_state bits pattern is composed with the
+ *  cell flag field using a logical or.
+ *
+ *  \param er_cell  Cell structure
+ *  \param er_state Bits pattern
+ */
+
+le_void_t er_cell_set_flag( er_cell_t * const er_cell, le_byte_t const er_state );
+
+/*! mutator methods
+ *
+ *  This function allows to clears the bits of the flag field of the cell
+ *  provided as parameter. The logical not of the \b er_state bits pattern
+ *  is composed with the flag field using a logical and.
+ *
+ *  \param er_cell  Cell structure
+ *  \param er_state Bits pattern
+ */
+
+le_void_t er_cell_set_zero( er_cell_t * const er_cell, le_byte_t const er_state );
+
+/*! mutator methods
+ *
+ *  This function assign the provided address structure to the provided cell
+ *  address by a simple copy.
+ *
+ *  \param er_cell Cell structure
+ *  \param er_addr Address structure
+ */
+
+le_void_t er_cell_set_push( er_cell_t * const er_cell, le_address_t const * const er_addr );
+
+/*! mutator methods
+ *
+ *  This function allows to un-serialise the address from the provided
+ *  array using the provided offset value. The de-serialised address is
+ *  then affected to the provided cell address. After un-serialisation, the
+ *  function returns the array next un-serialisation offset.
+ *
+ *  \param er_cell   Cell structure
+ *  \param er_array  Array structure
+ *  \param er_offset Serialisation offset
+ *
+ *  \return Returns the array next un-serialisation offset
+ */
+
+le_size_t er_cell_set_sync( er_cell_t * const er_cell, le_array_t * const er_array, le_size_t const er_offset );
+
+/*! mutator methods
+ *
+ *  This function process the array received from the remote server after
+ *  a query of the provided cell.
+ *
+ *  The cell edge position is computed by considering the array first point.
+ *  It is then converted from the geographic coordinates to Cartesian
+ *  coordinates.
+ *
+ *  The rest of the point contained in the array are then processed. Each
+ *  point is added to a temporary raster, which is parsed in the three
+ *  dimensions to generate the corresponding faces.
+ *
+ *  The incoming array is assumed to provided the longitude, in radian, the
+ *  latitude, in radian, and the height above the WGS84 ellipsoid, expressed
+ *  in metres. These values are expected in this order and are mixed during
+ *  conversion to be adapted to the display frame. To summarise, the mix
+ *  of dimension occurs as follows :
+ *
+ *      x_geographic_cartesian -> z_opengl (0->2)
+ *      y_geographic_cartesian -> x_opengl (1->0)
+ *      z_geographic_cartesian -> y_opengl (2->1)
+ *
+ *  This is done to obtain a natural view in the OpenGL frame.
+ *
+ *  The function returns finally the size of the array of the provided cell
+ *  in bytes.
+ *
+ *  \param er_cell Cell structure
+ *
+ *  \return Returns cell array size in bytes
+ */
+
+le_size_t er_cell_set_data( er_cell_t * const er_cell );
+
+/*! mutator methods
+ *
+ *  This function generates graphical primitives according
+ *  to the content of the rasters. It creates a face between
+ *  an empty and a full cell of the raster, but not between
+ *  two full cells.
+ *
+ *  \param er_cell Cell structure
+ *  \param raster The position's raster
+ *  \param r_red The red channel's raster
+ *  \param r_green The green channel's raster
+ *  \param r_blue The blue channel's raster
+ *  \param axis The current parsing direction
+ *  \param two_span The value of pow(2, span)
+ *  \param size The size of one cell of the raster, in geographic coordinates
+ */
+le_void_t er_cell_gen_prim(er_cell_t * const er_cell,
+                           const le_byte_t * const raster,
+                           const le_data_t * const r_red,
+                           const le_data_t * const r_green,
+                           const le_data_t * const r_blue,
+                           const le_size_t axis,
+                           const le_size_t two_span,
+                           const le_real_t * const size);
+
+/*! mutator methods
+ *
+ *  This function converts edge coordinates from world's
+ *  parametric ones to cell's Cartesian ones.
+ *
+ *  \param er_cell Cell structure
+ *  \param edge Edge
+ */
+le_void_t er_cell_para2cart(er_cell_t * const er_cell, le_real_t * edge );
+
+/*! mutator methods
+ *
+ *  This function computes the index of a raster's cell
+ *  from its e1, e2, e3 coordinates, according to the
+ *  current parsing axis.
+ *
+ *  \param e Values of e1, e2 and e3
+ *  \param a The current parsing axis
+ *  \param two_span The value of pow(2, span)
+ */
+le_size_t er_cell_get_raster_index( const le_size_t * const e, const le_size_t * const a, le_size_t const two_span);
+
+/*! mutator methods
+ *
+ *  This function convolves the color and the normal at
+ *  a given vertex of a raster's cell over its eight neibours.
+ *
+ *  \param raster The position's raster
+ *  \param r_red The red channel's raster
+ *  \param r_green The green channel's raster
+ *  \param r_blue The blue channel's raster
+ *  \param v_e The edge of some vertex
+ *  \param axis The current parsing direction
+ *  \param two_span The value of pow(2, span)
+ *  \param color The 3 values to update (R, G, B)
+ *  \param normal The 3 values to update
+ */
+le_void_t er_cell_vertex_convolution( const le_byte_t * const raster,
+                                      const le_data_t * const r_red,
+                                      const le_data_t * const r_green,
+                                      const le_data_t * const r_blue,
+                                      const le_size_t * const v_e,
+                                      const le_size_t * const a,
+                                      le_size_t const two_span,
+                                      le_size_t * const color,
+                                      le_real_t * const normal );
+
+/*! mutator methods
+ *
+ *  This function convolves the color and the normal at
+ *  a given vertex of a raster's cell over its eight neibours.
+ *
+ *  \param er_cell Cell structure
+ *  \param index The primitive index
+ *  \param edge The edge's coordinates
+ *  \param color The edge's color (R, G, B)
+ *  \param normal The edge's normal
+ */
+le_void_t er_cell_set_primitive( er_cell_t * const er_cell,
+                                 const le_size_t index,
+                                 const le_real_t * const edge,
+                                 const le_size_t * const color,
+                                 const le_real_t * const normal );
+
+/*  The function that displays all the cell's primitives.
+ */
+le_void_t er_cell_display( er_cell_t * const er_cell );
+
+/*
+ header - C/C++ compatibility
+ */
+
 # ifdef __cplusplus
 }
 # endif

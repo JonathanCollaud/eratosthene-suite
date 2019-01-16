@@ -57,15 +57,8 @@ extern "C" {
 # define ER_VIEW_C { 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, ER_COMMON_SPD }
 
 /* define pseudo-constructor - default point of view */
-    // Geneva
-    # define ER_VIEW_D { 6.15, 46.207, LE_ADDRESS_WGS_A * 1.0005, 0.0, 0.0, 1, 950486422, 0, 31536000, 31536000, ER_COMMON_SPD }
-    //# define ER_VIEW_D { 6.147, 46.199, LE_ADDRESS_WGS_A * 1.0001, 0.0, 68.0, 1, 950486422, 0, 31536000, 31536000, ER_COMMON_SPD }
-    
-    // Paris
-    //# define ER_VIEW_D { 2.33, 48.86, LE_ADDRESS_WGS_A * 1.002, 0.0, 0.0, 1, -707330589, 0, 31536000, 31536000, ER_COMMON_SPD }
-    
-    // Eiffel Tower
-    //# define ER_VIEW_D { 2.3019222, 48.8532032, LE_ADDRESS_WGS_A * 1.00002, -45.0, 100.0, 1, -707330589, 0, 31536000, 31536000, ER_COMMON_SPD }
+# define ER_VIEW_D { 6.15, 46.207, LE_ADDRESS_WGS_A * 1.0005, 0.0, 0.0, 1, 950486422, 0, 31536000, 31536000, ER_COMMON_SPD }
+
 /*
     header - preprocessor macros
  */

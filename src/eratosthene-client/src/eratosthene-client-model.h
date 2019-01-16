@@ -436,7 +436,7 @@ le_void_t er_model_display_cell( er_model_t const * const er_model, er_view_t co
 
 /*! \brief display methods
  *
- *  This function displays a simple wireframe model of earth to provide a
+ *  This function displays a voxelized model of earth to provide a
  *  permanent visual reference.
  *
  *  More information on the earth display strategy are available on the

@@ -356,7 +356,7 @@ le_enum_t er_model_set_sync( er_model_t * const er_model )
                 er_cell_set_flag( er_model->md_cell + er_model->md_free, ER_CELL_SYN );
 
             } else {
-                
+
                 /* update d-cell state */
                 er_cell_set_flag( er_model->md_cell + er_model->md_free, ER_CELL_SYN | ER_CELL_DIS );
 
@@ -473,10 +473,10 @@ le_void_t er_model_display_cell( er_model_t const * const er_model, er_view_t co
 
     /* motion management - azimuth rotation */
     glRotated( + er_view_get_azm( er_view ), 0.0, 0.0, 1.0 );
-    
+
     /* parsing d-cells array */
     for ( le_size_t er_parse = 0; er_parse < er_model->md_size; er_parse ++ ) {
-        
+
         /* check d-cell flag */
         if ( er_cell_get_flag( er_model->md_cell + er_parse, ER_CELL_DIS ) == ER_CELL_DIS ) {
 
@@ -499,8 +499,8 @@ le_void_t er_model_display_cell( er_model_t const * const er_model, er_view_t co
             /* motion management - planimetric rotation */
             glRotated( + er_lat, 1.0, 0.0, 0.0 );
             glRotated( - er_lon, 0.0, 1.0, 0.0 );
-            
-            /* display graphical primitives */
+
+            /* compute and display graphical primitives */
             er_cell_display(er_model->md_cell + er_parse);
 
             /* d-cell matrix */

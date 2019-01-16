@@ -273,19 +273,19 @@ le_void_t er_client_loops(  er_client_t * const er_client, SDL_Window * const er
     /* opengl features configuration */
     glEnable( GL_DEPTH_TEST );
     glEnable( GL_BLEND      );
-    
+
     /* enable culling */
     glEnable( GL_CULL_FACE );
-    
+
     /* face culling */
     glCullFace( GL_BACK );
-    
+
     /* enable light */
     glEnable( GL_LIGHTING );
     glEnable( GL_LIGHT0 );
-    
+
     glEnable( GL_COLOR_MATERIAL );
-    
+
     /* normal vector normalization */
     glEnable(GL_NORMALIZE);
 
@@ -293,31 +293,31 @@ le_void_t er_client_loops(  er_client_t * const er_client, SDL_Window * const er
     glFogf ( GL_FOG_MODE   , GL_LINEAR );
     glFogf ( GL_FOG_DENSITY, 0.3       );
     glFogfv( GL_FOG_COLOR  , er_color  );
-    
+
     /* assign ambient color */
     er_color[0] = 0.4;
     er_color[1] = 0.4;
     er_color[2] = 0.4;
     er_color[3] = 1.0;
-    
+
     /* light ambient color */
     glLightfv( GL_LIGHT0, GL_AMBIENT, er_color );
-    
+
     /* assign diffuse color */
     er_color[0] = 1.0;
     er_color[1] = 1.0;
     er_color[2] = 1.0;
     er_color[3] = 1.0;
-    
+
     /* light diffuse color */
     glLightfv( GL_LIGHT0, GL_DIFFUSE, er_color );
-    
+
     /* assign light direction */
     er_color[0] = 0.0;
     er_color[1] = 0.0;
     er_color[2] = 1.0;
     er_color[3] = 0.0;
-    
+
     /* light direction */
     glLightfv( GL_LIGHT0, GL_POSITION, er_color );
 
