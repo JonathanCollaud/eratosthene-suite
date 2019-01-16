@@ -262,81 +262,81 @@ le_void_t er_client_loops(  er_client_t * const er_client, SDL_Window * const er
 {
     /* color array variable */
     GLfloat er_vector[4] = { 0.0 };
-    
+
     /* shade model */
     glShadeModel( GL_SMOOTH );
-    
+
     /* enable culling */
     glEnable( GL_CULL_FACE );
-    
+
     /* enable depth test */
     glEnable( GL_DEPTH_TEST );
-    
+
     /* enable light */
     glEnable( GL_LIGHTING );
     glEnable( GL_LIGHT0 );
-    
+
     glEnable( GL_COLOR_MATERIAL );
-    
+
     /* face culling */
     glCullFace( GL_BACK );
-    
+
     /* opengl blending configuration */
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-    
+
     /* permanent enable vertex array */
     glEnableClientState( GL_VERTEX_ARRAY );
-    
+
     /* permanent enable color array */
     glEnableClientState( GL_COLOR_ARRAY );
-    
+
     /* permanent enable normal array */
     glEnableClientState( GL_NORMAL_ARRAY );
-    
+
     /* opengl point size */
     glPointSize( 2.0 );
-    
+
     /* depth buffer clear values */
     glClearDepth( 1.0 );
-    
+
     /* assign background color */
     er_vector[0] = 0.03;
     er_vector[1] = 0.04;
     er_vector[2] = 0.05;
     er_vector[3] = 1.00;
-    
+
     /* color buffer clear values */
     glClearColor( er_vector[0], er_vector[1], er_vector[2], er_vector[3] );
-    
+
     /* opengl fog configuration */
     glFogf ( GL_FOG_MODE   , GL_LINEAR );
     glFogf ( GL_FOG_DENSITY, 0.3       );
     glFogfv( GL_FOG_COLOR  , er_vector );
-    
+
     /* assign ambient color */
     er_vector[0] = 0.4;
     er_vector[1] = 0.4;
     er_vector[2] = 0.4;
     er_vector[3] = 1.0;
-    
+
     /* light ambient color */
     glLightfv( GL_LIGHT0, GL_AMBIENT, er_vector );
-    
+
     /* assign diffuse color */
     er_vector[0] = 1.0;
     er_vector[1] = 1.0;
     er_vector[2] = 1.0;
     er_vector[3] = 1.0;
-    
+
     /* light diffuse color */
     glLightfv( GL_LIGHT0, GL_DIFFUSE, er_vector );
-    
+
     /* assign light direction */
     er_vector[0] = 0.0;
     er_vector[1] = 0.0;
     er_vector[2] = 1.0;
     er_vector[3] = 0.0;
-    
+
     /* light direction */
     glLightfv( GL_LIGHT0, GL_POSITION, er_vector );
 
@@ -700,31 +700,31 @@ le_void_t er_client_callback_keydown( SDL_KeyboardEvent er_event, er_client_t * 
 
     }
     break;
-            
+
     case ( SDLK_l ) : {
-            
+
         /* update span value */
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            
+
     }
     break;
-    
+
     case ( SDLK_f ) : {
-            
+
         /* update span value */
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            
+
     }
     break;
-            
+
     case ( SDLK_p ) : {
-            
+
         /* update span value */
         glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
-            
+
     }
     break;
-            
+
     }
 
 }
